@@ -6,9 +6,9 @@ visual drag and drop builder for forms/pages/etc
 3. Instantly view the rendered result
 4. Save your form/page/html content
 
-vuejs for managing the view model
-semantic-ui for building the user interface
-jquery-ui-sortable for sorting ;)
-
+depends on:
+<p>dependencies:</p>\n<p>semantic-ui (www.semantic-ui.com) building the user interface</p>\n
+<p>vuejs (http://vuejs.org) managing the view model</p>\n
+<p>jquery&amp;jquery-ui&nbsp;</p>\n<p>&nbsp;</p>
 
 *** Work in progress
