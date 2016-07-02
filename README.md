@@ -7,8 +7,8 @@ visual drag and drop builder for forms/pages/etc
 4. Save your form/page/html content
 
 depends on:
-<p>dependencies:</p>\n<p>semantic-ui (www.semantic-ui.com) building the user interface</p>\n
-<p>vuejs (http://vuejs.org) managing the view model</p>\n
-<p>jquery&amp;jquery-ui&nbsp;</p>\n<p>&nbsp;</p>
+<p>dependencies:</p>\n<p>semantic-ui (www.semantic-ui.com) building the user interface</p>
+<p>vuejs (http://vuejs.org) managing the view model</p>
+<p>jquery&amp;jquery-ui&nbsp;</p>
 
 *** Work in progress
