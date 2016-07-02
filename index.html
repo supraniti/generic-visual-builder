@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Amalia 0.2</title>
+    <!-- JQUERY -->
+    <script   src="/js/jquery-1.12.4.min.js"></script>
+    <!-- JQUERY UI-->
+    <script   src="/js/jquery-ui.min.js"></script>
+    <!-- SEMANTIC UI -->
+    <link rel="stylesheet" type="text/css" href="/semantic/semantic.min.css">
+    <script src="/semantic/semantic.min.js"></script>
+    <!-- APP CSS -->
+    <link rel="stylesheet" href="/css/gvb.css">
+    <!-- TINYMCE -->
+    <script src="/js/tinymce/tinymce.min.js"></script>
+</head>
+<body>
+<div class="ui grid top sidebar inverted labeled icon menu catalog">
+    <div class="row">
+        <div class="two wide column"><a class="item"><i class="camera retro icon"></i>{{context.UUID}}</a></div>
+        <div class="two wide column"><a class="item" v-on:click="setup('accordion')"><i class="copy icon"></i>Accordion</a></div>
+        <div class="two wide column"><a class="item" v-on:click="setup('text')"><i class="copy icon"></i>Text</a></div>
+    </div>
+</div>
+<div class="ui top labeled grid sidebar inverted segment component-context">
+    <div class="eight wide column">
+        <h3>COMPONENT SETUP</h3>
+    <div class="ui inverted form">
+        <ol>
+            <li v-for="child in context.component.children">
+                <div class="two fields">
+                  <div class="field">  
+                    <label>Title</label>
+                    <input placeholder="Tab Title" type="text" v-model="context.component.children[$index].properties.title">
+                  </div>
+                  <div class="field">
+                    <label>Content</label>
+                    <input placeholder="Tab Content" type="text" v-model="context.component.children[$index].properties.content">
+                  </div>
+                </div>            
+            </li>
+        </ol>
+
+        <div class="two fields">
+          <div class="field">
+            <label>class object</label>
+            <input placeholder="Some property" type="text" v-model="context.component.classObject">
+          </div>
+          <div class="field">
+            <label>content</label>
+            <input placeholder="Other Property" type="text" v-model="context.component.content">
+          </div>
+        </div>
+    </div>
+    </div>
+    <div class="eight wide column">
+            <h3>COMPONENT PREVIEW</h3>
+    <template v-if="context.component">
+        <div class="ui segment">
+            <render-main :data="context.component">
+               
+            </render-main>
+        </div>
+    </template>
+    </div>
+</div>
+<div class="ui left labeled icon sidebar inverted vertical menu row-context">
+    <div class="item"><i class="camera retro icon"></i>{{context.UUID}}</div>
+    <a class="item" v-on:click="context.addMagic()"><i class="columns icon"></i>Add Column</a>
+    <a class="item" v-on:click=""><i class="list layout icon"></i>Add Layout</a>
+    <a class="item" v-on:click=""><i class="copy icon"></i>Clone</a>
+    <a class="item" v-on:click="removeMagic(context)"><i class="red remove icon"></i>Delete Row</a>    
+</div>
+<div class="ui left labeled icon sidebar inverted vertical menu col-context">
+    <div class="item"><i class="camera retro icon"></i>{{context.UUID}}</div>
+    <a class="item" v-on:click="catalog()"><i class="columns icon"></i>Add Component</a>
+    <div class="item">
+        <div class="mini ui buttons">
+            <button class="mini ui red button" v-on:click="context.minus()">
+                <i class="minus circle icon"></i>
+            </button>
+            <div class="or" data-text="{{context.colwidth +1}}"></div>
+            <button class="mini ui green button" v-on:click="context.plus()">
+                <i class='add circle icon'></i>
+            </button>
+        </div>
+        <p></p>
+        <p>Set Width</p>
+    </div>
+    <a class="item" v-on:click=""><i class="copy icon"></i>Clone</a>
+    <a class="item" v-on:click="removeMagic(context)"><i class="red remove icon"></i>Delete Row</a>    
+</div>
+<div class="pusher">
+    <div class="ui container" v-bind:class="{'editable': editable}" id="main-view">
+        <div class="ui horizontal section divider"><h3>Main Control Panel</h3></div>
+        <div id="main-control-panel">
+            <a class="ui button" v-on:click="addMagic()">add Row</a>
+            <div class="ui toggle checkbox">
+                <input type="checkbox" name="editable" v-model="editable">
+                <label>Edit</label>
+            </div>
+        </div>
+        <div class="ui horizontal section divider"><h3>Canvas</h3></div>
+        <!--Rows-->
+        <ul id ="grid-layout" v-sortable handle=".rowhandle" placeholder = "row-placeholder" connectwith="">
+            <div v-tinymce="variablecheck.html">{{variablecheck.html}}</div>
+            <p v-tinymce>eee</p>
+            <template v-for="magicRowData in magicRows">
+                <li class="magicrow row" v-bind:class="{'context': magicRowData.iscontext}">
+                    <div class="row-panel ui inverted top attached menu">
+                        <a class="item rowhandle"><i class="move icon"></i>{{index}}</a>
+                        <a class="item" v-on:click="magicRowData.context()"><i class="wrench icon"></i></a>
+                        <a class="item" v-on:click="removebyindex($index)"><i class="red remove icon"></i></a>
+                    </div>
+                    <!--Columns-->
+                    <ul class="ui grid container wpbcolumns" v-sortable handle=".columnhandle" placeholder = "column-placeholder" connectwith="ul.wpbcolumns">
+                        <template v-for="magicColumnData in magicRowData.magicColumns">
+                            <li class="magiccolumn" v-bind:class="[{'context': magicColumnData.iscontext}, magicColumnData.getwidth()]">
+                                <div class="ui inverted top attached segment col-panel">
+                                    <a class="item columnhandle"><i class="bordered white move icon"></i></a>
+                                    <a class="item" v-on:click="magicColumnData.context()"><i class="bordered white wrench icon"></i></a>
+                                    <a class="item" v-on:click="magicRowData.removebyindex($index)"><i class="bordered red remove icon"></i></a>
+                                </div>
+                                <!--Content Slots-->
+                                <ul class="wpbcomponents" v-sortable handle=".slothandle" placeholder = "slot-placeholder" connectwith="ul.wpbcomponents">
+                                    <template v-for="magicSlotData in magicColumnData.magicSlots">
+                                        <li class="magicslot" v-bind:class="{'context': magicSlotData.iscontext}">
+                                            <div class="slot-panel">
+                                                <a class="item slothandle"><i class="bordered inverted move icon"></i></a>
+                                                <a class="item" v-on:click="magicSlotData.context()"><i class="bordered inverted wrench icon"></i></a>
+                                                <a class="item" v-on:click="magicColumnData.removebyindex($index)"><i class="bordered inverted red remove icon"></i></a>
+                                            </div>
+                                            <!--Renderred content goes here-->
+                                            <render-main :data="magicSlotData.component">
+                                                <render-child v-for="child in magicSlotData.component.children" :data="child"></render-child>
+                                            </render-main>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </li>
+                        </template>
+                    </ul>
+                </li>
+            </template>
+        </ul>
+        <div class="ui horizontal section divider"><h3>Data Model</h3></div>
+        <div class="row"><pre>{{$data | json}}</pre></div>
+    </div>
+</div>
+<!-- TEMPLATES -->
+
+<!-- Template for recursively rendering components -->
+<template id="render-main">
+    <!-- Render Main -->
+    <div v-bind:class="[data.mainClass]">
+        <slot></slot>
+        <!-- Drag and Drop Slot -->
+        <div>***SUBCOMPONENTS PLACEHOLDER***</div>
+        <!-- Render Nested Components -->
+        <render-main v-for="component in data.subObjects" :data="component"></render-main>
+    </div>
+</template>
+
+<template id="render-child">
+    <partial v-bind:name="data.partial"></partial>
+</template>
+
+<template id="accordion-tab">
+    <div class="title">
+        <i class="dropdown icon"></i>
+        <div v-tinymce="data.properties.title">{{ data.properties.title }} </div>        
+    </div>
+    <div class="content">
+        kkkk
+    </div>
+</template>
+
+<template id="editable-content">
+    <div class="ui fitted slider checkbox">
+        <input type="checkbox" v-model="data.editable">
+        <label></label>
+    </div>
+    <template v-if="data.editable">
+        <div v-editor="data.html"></div>
+    </template>
+    <template v-else>
+        {{{data.html}}}
+    </template>
+
+</template>
+
+<template id="text-content">
+    <div class="content" v-bind:class="[{'active': active},data.firstClass]">
+        {{data.content.content}}
+    </div>
+</template>
+<!-- VUE JavaScript -->
+<script src="/js/vue.min.js"></script>
+<!-- APP JavaScript -->
+<script src="/js/gvb.js"></script>
+</body>
+</html>

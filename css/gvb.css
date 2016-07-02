@@ -1,0 +1,106 @@
+ul ul ul {
+    list-style-type: none !important;
+}
+#grid-layout{
+    list-style-type: none;
+    padding: 0 !important;
+}
+.wpbcolumns {
+    list-style-type: none !important;
+}
+.editable #grid-layout {
+    padding: 0;
+}
+.row-panel{
+    display: none !important;
+}
+.editable .row-panel{
+    display: flex !important;
+}
+.editable .magicrow:hover {
+    box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+    background-color: white;
+}
+.editable .magicrow {
+    margin-bottom: 10px;
+    padding: 0 !important;
+    min-height: 100px;
+    border-top: 1px dotted gray;
+    border-bottom: 1px dotted gray;
+}
+.row-placeholder{
+    display: flexbox;
+    height: 90px;
+    border: 1px dashed gray;
+    border-radius: 10px;
+    margin: 5px;
+}
+.editable .wpbcolumns{
+    min-height: 100px;
+    margin: 0 !important; 
+}
+.editable .wpbcomponents{
+    list-style-type: none;
+    min-height: 50px;
+    padding: 0 !important; 
+    margin: 0 !important;
+}
+.editable .magiccolumn{
+    border-right: 1px dotted gray;
+    padding: 1px !important;
+}
+.editable .magiccolumn:hover {
+    box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+}
+.column-placeholder{
+    width: 200px;
+    border: 1px dashed gray;
+    border-radius: 10px;
+    margin: 5px;
+}
+.col-panel{
+    display: none;
+}
+.editable .col-panel{
+    display: block;
+    padding: 5px !important;
+}
+.editable .col-panel a{
+    color: rgba(255,255,255,0.9);
+}
+.editable .col-panel a:hover{
+    color: rgba(255,255,255,1);
+}
+.editable .context{
+    box-shadow: 5px 5px 5px 0px rgba(255,0,0,0.75);
+}
+.slot-placeholder{
+    display: flexbox;
+    width: 90%;
+    height: 50px;
+    border: 1px dashed gray;
+    border-radius: 10px;
+    margin: 5px;
+}
+.slot-panel{
+    display: none !important;
+}
+.editable .slot-panel{
+    display: block !important;
+    padding: 5px !important;
+}
+.editable .slot-panel a{
+    color: rgba(255,255,255,0.9);
+}
+.editable .slot-panel a:hover{
+    color: rgba(255,255,255,1);
+}
+.editable .magicslot{
+    //margin-top: 1rem !important;
+    //padding: 0 !important;
+}
+
+
+.trumbowyg-box, .trumbowyg-editor {
+    min-height: 30px !important;
+}
