@@ -14,4 +14,4 @@ depends on:
 
 *** Work in progress
 
-<p><a href="supraniti.github.io/generic-visual-builder">DEMO</a></p>
+<p>DEMO: http://supraniti.github.io/generic-visual-builder</p>
