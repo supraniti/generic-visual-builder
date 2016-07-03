@@ -207,15 +207,12 @@ Vue.directive('tinymce', {
             console.log(self.ed.getContent({ format: 'html' }));
             this.update(self.ed.getContent({ format: 'html' }));
         } .bind(this));
-
-        this.ed.render();
+        Vue.nextTick (function(){
+            self.ed.render();
+        })
     },
     update: function (value) {
-        console.log(value)
-        console.log(this);
         this.set(value);
-        //console.log(tinymce.EditorManager.get(this.editorID));
-
     },
     unbind: function () {
         tinymce.remove(this.editorID);
