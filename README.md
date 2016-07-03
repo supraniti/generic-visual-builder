@@ -1,9 +1,9 @@
 # generic-visual-builder
 visual drag and drop builder for forms/pages/etc
 
-1. Use json schemas to create components
-2. Build your layout, arrange components, set components properties
+1. Use json schemas to create componentses
 3. Instantly view the rendered result
+2. Build your layout, arrange components, set components properti
 4. Save your form/page/html content
 
 depends on:
@@ -14,5 +14,4 @@ depends on:
 
 *** Work in progress
 
-<p>
-demo: supraniti.github.io/generic-visual-builder</p>
+<p><a href="supraniti.github.io/generic-visual-builder">DEMO</a></p>
