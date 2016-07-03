@@ -104,8 +104,6 @@
         <div class="ui horizontal section divider"><h3>Canvas</h3></div>
         <!--Rows-->
         <ul id ="grid-layout" v-sortable handle=".rowhandle" placeholder = "row-placeholder" connectwith="">
-            <div v-tinymce="variablecheck.html">{{variablecheck.html}}</div>
-            <p v-tinymce>eee</p>
             <template v-for="magicRowData in magicRows">
                 <li class="magicrow row" v-bind:class="{'context': magicRowData.iscontext}">
                     <div class="row-panel ui inverted top attached menu">
@@ -169,10 +167,10 @@
 <template id="accordion-tab">
     <div class="title">
         <i class="dropdown icon"></i>
-        <div v-tinymce="data.properties.title">{{ data.properties.title }} </div>        
+        <p v-tinymce="data.properties.title">{{ data.properties.title }}</p>
     </div>
-    <div class="content">
-        kkkk
+    <div class="content" v-tinymce="data.properties.content">
+        {{ data.properties.content }}
     </div>
 </template>
 
