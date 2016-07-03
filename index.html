@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <title>Amalia 0.2</title>
     <!-- JQUERY -->
-    <script   src="/js/jquery-1.12.4.min.js"></script>
+    <script   src="/generic-visual-builder/js/jquery-1.12.4.min.js"></script>
     <!-- JQUERY UI-->
-    <script   src="/js/jquery-ui.min.js"></script>
+    <script   src="/generic-visual-builder/js/jquery-ui.min.js"></script>
     <!-- SEMANTIC UI -->
-    <link rel="stylesheet" type="text/css" href="/semantic/semantic.min.css">
-    <script src="/semantic/semantic.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/generic-visual-builder/semantic/semantic.min.css">
+    <script src="/generic-visual-builder/semantic/semantic.min.js"></script>
     <!-- APP CSS -->
-    <link rel="stylesheet" href="/css/gvb.css">
+    <link rel="stylesheet" href="/generic-visual-builder/css/gvb.css">
     <!-- TINYMCE -->
-    <script src="/js/tinymce/tinymce.min.js"></script>
+    <script src="/generic-visual-builder/js/tinymce/tinymce.min.js"></script>
 </head>
 <body>
 <div class="ui grid top sidebar inverted labeled icon menu catalog">
@@ -130,9 +130,7 @@
                                                 <a class="item" v-on:click="magicColumnData.removebyindex($index)"><i class="bordered inverted red remove icon"></i></a>
                                             </div>
                                             <!--Renderred content goes here-->
-                                            <render-main :data="magicSlotData.component">
-                                                <render-child v-for="child in magicSlotData.component.children" :data="child"></render-child>
-                                            </render-main>
+                                            <render-main :data="magicSlotData.component"></render-main>
                                         </li>
                                     </template>
                                 </ul>
@@ -152,25 +150,25 @@
 <template id="render-main">
     <!-- Render Main -->
     <div v-bind:class="[data.mainClass]">
-        <slot></slot>
+        <!-- Render sub-components -->
+        <template v-for="child in data.children">
+            <partial v-bind:name="child.partial"></partial>
+        </template>
         <!-- Drag and Drop Slot -->
-        <div>***SUBCOMPONENTS PLACEHOLDER***</div>
+        <div>***</div>
         <!-- Render Nested Components -->
         <render-main v-for="component in data.subObjects" :data="component"></render-main>
     </div>
 </template>
 
-<template id="render-child">
-    <partial v-bind:name="data.partial"></partial>
-</template>
-
 <template id="accordion-tab">
+    <div class="ui label" v-bind:class="{'blue': child.editable}"><i class="edit icon" v-on:click="child.toggle()"></i></div>
     <div class="title">
         <i class="dropdown icon"></i>
-        <p v-tinymce="data.properties.title">{{ data.properties.title }}</p>
+        <header style="display:inline-block" v-tinymce="child.properties.title" :obj="child.properties.title"><h3>Title</h3></header>
     </div>
-    <div class="content" v-tinymce="data.properties.content">
-        {{ data.properties.content }}
+    <div class="content">
+        <div  v-tinymce="child.properties.content" :obj="child.properties.content"><p>content</p></div>
     </div>
 </template>
 
@@ -194,8 +192,8 @@
     </div>
 </template>
 <!-- VUE JavaScript -->
-<script src="/js/vue.min.js"></script>
+<script src="/generic-visual-builder/js/vue.min.js"></script>
 <!-- APP JavaScript -->
-<script src="/js/gvb.js"></script>
+<script src="/generic-visual-builder/js/gvb.js"></script>
 </body>
 </html>

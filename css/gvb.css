@@ -45,6 +45,10 @@ ul ul ul {
     padding: 0 !important; 
     margin: 0 !important;
 }
+.wpbcomponents{
+    list-style-type: none;
+    padding: 0 !important;
+}
 .editable .magiccolumn{
     border-right: 1px dotted gray;
     padding: 1px !important;

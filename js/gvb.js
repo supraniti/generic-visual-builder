@@ -1,3 +1,5 @@
+var sampleTitle = '<h3>Lorem ipsum dolor sit amet</h3>';
+var sampleParagraph = '<p>Suspendisse enim velit, porta et urna at, vehicula interdum sapien. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ipsum augue, condimentum rhoncus est quis, cursus dignissim sapien. Fusce id interdum nunc. Suspendisse neque tellus, aliquam quis maximus sit amet, ultricies vel ipsum. Proin porttitor massa ut pharetra convallis. Sed ligula odio, scelerisque eget sapien at, pretium venenatis arcu. Nulla facilisi.</p>';
 var inlineEditorSimple={
     inline: true,
     toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |colorbox',
@@ -5,78 +7,78 @@ var inlineEditorSimple={
 };
 
 Vue.directive('editable', {
-  twoWay: true,
-  data: {
-    singleLine: true,
-    model : '',
-    isInitialized : false,
-    modified: false
-  },
-  params: ['editable-multiline'],
-  bind: function () {
-    if(this.params.editableMultiline) {
-      this.data.singleLine = false;
-    }
-    this.el.setAttribute("contenteditable", "");
-    this.el.addEventListener("blur", function (event) {
-        var content = this.getContent();
-        this.set(content);
-        // resetting the directive.
-        this.data.model = '';
-        this.data.isInitialized = false;
-        if (this.isModified() === true) {
-            this.vm.$dispatch('modified');
+    twoWay: true,
+    data: {
+        singleLine: true,
+        model : '',
+        isInitialized : false,
+        modified: false
+    },
+    params: ['editable-multiline'],
+    bind: function () {
+        if(this.params.editableMultiline) {
+            this.data.singleLine = false;
         }
-    }.bind(this));
-  },
-  update: function () {
-    this.el.addEventListener("keydown", function (key) {
-      // setting initial html value for safety escape button.
-      if (this.data.isInitialized === false) {
-        this.data.model = this.getContent();
-        this.data.isInitialized = true;
-      }
-      var code = key.keyCode ? key.keyCode : key.which;
+        this.el.setAttribute("contenteditable", "");
+        this.el.addEventListener("blur", function (event) {
+            var content = this.getContent();
+            this.set(content);
+            // resetting the directive.
+            this.data.model = '';
+            this.data.isInitialized = false;
+            if (this.isModified() === true) {
+                this.vm.$dispatch('modified');
+            }
+        }.bind(this));
+    },
+    update: function () {
+        this.el.addEventListener("keydown", function (key) {
+            // setting initial html value for safety escape button.
+            if (this.data.isInitialized === false) {
+                this.data.model = this.getContent();
+                this.data.isInitialized = true;
+            }
+            var code = key.keyCode ? key.keyCode : key.which;
 
-      if (this.data.singleLine && this.isNewLine(code)) {
-        key.stopPropagation();
-        key.preventDefault();
-        this.el.blur();
-        this.data.modified = true;
-      } else if (this.isEscape(code)) {
-        this.data.isInitialized = false;
-        this.data.modified = false;
+            if (this.data.singleLine && this.isNewLine(code)) {
+                key.stopPropagation();
+                key.preventDefault();
+                this.el.blur();
+                this.data.modified = true;
+            } else if (this.isEscape(code)) {
+                this.data.isInitialized = false;
+                this.data.modified = false;
 
-        this.el.innerHTML = this.data.model;
-        this.el.blur();
-      } else {
-        this.data.modified = true;
-      }
+                this.el.innerHTML = this.data.model;
+                this.el.blur();
+            } else {
+                this.data.modified = true;
+            }
 
-    }.bind(this));
+        }.bind(this));
 
-  },
-  isNewLine: function (code) {
-    var overrideKeys = [13, 38, 48];
+    },
+    isNewLine: function (code) {
+        var overrideKeys = [13, 38, 48];
 
-    for(var i in overrideKeys) {
-        if(overrideKeys[i] == code) return true;
+        for(var i in overrideKeys) {
+            if(overrideKeys[i] == code) return true;
+        }
+    },
+    isEscape: function (code) {
+        return code === 27;
+    },
+    isModified: function() {
+        return this.data.modified;
+    },
+    getContent: function () {
+        var content = this.el.innerHTML;
+        // stripped string taken from http://css-tricks.com/snippets/javascript/strip-html-tags-in-javascript/
+        content = content.replace(/&nbsp;/gi,'');
+        content = content.replace(/(<([^>]+)>)/ig,"");
+
+        return content;
     }
-  },
-  isEscape: function (code) {
-    return code === 27;
-  },
-  isModified: function() {
-    return this.data.modified;
-  },
-  getContent: function () {
-    var content = this.el.innerHTML;
-    // stripped string taken from http://css-tricks.com/snippets/javascript/strip-html-tags-in-javascript/
-    content = content.replace(/&nbsp;/gi,'');
-    content = content.replace(/(<([^>]+)>)/ig,"");
-
-    return content;
-  }
 })
 //Generate UUID
 function generateUUID(){
@@ -191,31 +193,41 @@ Vue.directive('editor', {
 
 Vue.directive('tinymce', {
     twoWay: true,
-    params: ['initial'],
+    params: ['obj'],
+    paramWatchers: {
+        obj: function (val, oldVal) {
+            console.log('val: ' + val + ' oldval: ' + oldVal)
+            if (this.ed.getContent()!== val){
+                this.ed.setContent(val);
+            }
+        }
+    },
     bind: function () {
         var self = this;
         this.editorID = generateUUID();
         $(this.el).context.id = this.editorID
         //Creates a new editor instance
         this.ed = tinymce.EditorManager.createEditor(this.editorID, inlineEditorSimple);
-        console.log(tinymce.EditorManager);
-        this.ed.on('show', function (e) {
-            console.log(this.editorID);
-            console.log('shown!');
-        });
-        this.ed.on('change', function (e) {
-            console.log(self.ed.getContent({ format: 'html' }));
-            this.update(self.ed.getContent({ format: 'html' }));
+         this.ed.on('NodeChange', function (e) {
+            if (self.params.obj !== self.ed.getContent({ format: 'html' })){
+                self.params.obj = self.ed.getContent({ format: 'html' })
+                this.update(self.params.obj);
+            }
         } .bind(this));
         Vue.nextTick (function(){
             self.ed.render();
-        })
+        });
     },
     update: function (value) {
-        this.set(value);
+        if ((value)&&(this)){
+            // Set value from editor to object
+            this.set(value);
+        }
+        console.log(tinymce.EditorManager)
     },
     unbind: function () {
         tinymce.remove(this.editorID);
+        console.log('unbind!');
     }
 })
 //*** DATA STRUCTURE ***
@@ -255,12 +267,12 @@ var magicColumnData = function () {
             this.magicSlots.splice(index, 1)
         }
     },
-    self.context = function () {
-        layoutgrid.context.iscontext = false;
-        self.iscontext = true;
-        layoutgrid.context = this;
-        $('.col-context').sidebar('toggle');
-    };
+        self.context = function () {
+            layoutgrid.context.iscontext = false;
+            self.iscontext = true;
+            layoutgrid.context = this;
+            $('.col-context').sidebar('toggle');
+        };
     self.getwidth = function () {
         return layoutgrid.sizing[self.colwidth];
     };
@@ -300,13 +312,13 @@ var childPartial = 'accordion-tab';
 var childPropObj = [
     {
         name: 'title',
-        value: 'title place holder',
+        //value: sampleTitle,
         editable: true,
         type: 'text'
     },
     {
         name: 'content',
-        value: 'content place holder',
+        //value: sampleParagraph,
         editable: true,
         type: 'text'
     }
@@ -324,6 +336,8 @@ var abstractComplexComponent = function (type, mainclass, propObj, childPropObj,
     this.children = [];
     this.subObjects = [];
     this.properties = [];
+    //this.sampleTitle = sampleTitle;
+    //this.sampleParagraph = sampleParagraph;
     this.readyFunction = readyFunction;
     this.mainClass = mainclass;
     this.classObject = {};
@@ -342,7 +356,7 @@ var abstractComplexComponent = function (type, mainclass, propObj, childPropObj,
         this.children.splice(index, 1);
     }
     if (type !== 'simple') {
-         for (var i = 0; i < childCount; i += 1) {
+        for (var i = 0; i < childCount; i += 1) {
             this.addMagic(childPropObj);
         }
     }
@@ -362,13 +376,8 @@ var abstractComponentChild = function () {
     this.properties = {};
     this.editable = false;
     this.toggle = function () {
-        if (this.editable) {
-            this.editable = false;
-        }
-        else {
-            this.editable = true;
-        }
-    }
+        this.editable = !this.editable;
+    };
 }
 var abstractComponentProperty = function (name, value) {
     var self = this;
@@ -381,52 +390,6 @@ var abstractComponentProperty = function (name, value) {
 var layoutgrid = new Vue({
     el: 'body',
     data: {
-        msg: 'hellp',
-        variablecheck: {
-            name: "editable content",
-            editor: false,
-            html: 'place your content here',
-            toggle: function () {
-                if (this.editor) {
-                    this.editor = false;
-                    //$('#trumbowyg-demo').trumbowyg('destroy');
-                }
-                else {
-                    this.editor = true;
-                    //$('#trumbowyg-demo').trumbowyg();
-                }
-            }
-        },
-        variablecheck1: {
-            name: "editable content",
-            editor: false,
-            html: 'place your content here',
-            toggle: function () {
-                if (this.editor) {
-                    this.editor = false;
-                    //$('#trumbowyg-demo').trumbowyg('destroy');
-                }
-                else {
-                    this.editor = true;
-                    //$('#trumbowyg-demo').trumbowyg();
-                }
-            }
-        },
-        variablecheck2: {
-            name: "editable content",
-            editor: false,
-            html: 'place your content here',
-            toggle: function () {
-                if (this.editor) {
-                    this.editor = false;
-                    //$('#trumbowyg-demo').trumbowyg('destroy');
-                }
-                else {
-                    this.editor = true;
-                    //$('#trumbowyg-demo').trumbowyg();
-                }
-            }
-        },
         UUID: '',
         magicRows: [],
         context: {},
@@ -522,47 +485,22 @@ var layoutgrid = new Vue({
             },
             partials: {
                 'accordion-tab': '#accordion-tab',
-                'accordion-tab-2': '#accordion-tab-2',
-                'text-content': '#text-content'
-
-            },
-            components: {
-
             }
         },
-        'render-child': {
+        'render-context': {
             props: ['data'],
-            template: "#render-child",
-            name: 'render-child',
+            template: "#render-context",
+            name: 'render-context',
             ready: function () {
                 var self = this;
-                console.log('child is ready');
+                if (this.data.parent) {
+                    this.data.readyFunction();
+                    console.log('component is ready');
+                }
             },
             partials: {
                 'accordion-tab': '#accordion-tab',
-                'accordion-tab-2': '#accordion-tab-2',
-                'text-content': '#text-content'
             }
-        },
-        'editable-content': {
-            props: ['data'],
-            template: "#editable-content",
-            ready: function () {
-                var self = this;
-                $(this.el).trumbowyg({ autogrow: true });
-                $(this.el).trumbowyg('html', this.data.properties.content);
-                $(this.el).trumbowyg().on('tbwchange ', function () {
-                    self.update();
-                });
-            },
-            update: function () {
-                this.data.properties.content.set($(this.el).trumbowyg('html'));
-            }
-            //$(this.el).trumbowyg({ autogrow: true });
-            //$(this.el).trumbowyg('html', self);
-            //$(this.el).trumbowyg().on('tbwchange ', function () {
-            //  self.update();
-            //});
         }
     }
 })
