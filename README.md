@@ -13,3 +13,6 @@ depends on:
 <p>jquery&amp;jquery-ui&nbsp;</p>
 
 *** Work in progress
+
+<p>
+demo: supraniti.github.io/generic-visual-builder</p>
