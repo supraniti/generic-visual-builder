@@ -1,85 +1,5 @@
 var sampleTitle = '<h3>Lorem ipsum dolor sit amet</h3>';
 var sampleParagraph = '<p>Suspendisse enim velit, porta et urna at, vehicula interdum sapien. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ipsum augue, condimentum rhoncus est quis, cursus dignissim sapien. Fusce id interdum nunc. Suspendisse neque tellus, aliquam quis maximus sit amet, ultricies vel ipsum. Proin porttitor massa ut pharetra convallis. Sed ligula odio, scelerisque eget sapien at, pretium venenatis arcu. Nulla facilisi.</p>';
-var inlineEditorSimple={
-    inline: true,
-    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |colorbox',
-    menubar: false
-};
-
-Vue.directive('editable', {
-    twoWay: true,
-    data: {
-        singleLine: true,
-        model : '',
-        isInitialized : false,
-        modified: false
-    },
-    params: ['editable-multiline'],
-    bind: function () {
-        if(this.params.editableMultiline) {
-            this.data.singleLine = false;
-        }
-        this.el.setAttribute("contenteditable", "");
-        this.el.addEventListener("blur", function (event) {
-            var content = this.getContent();
-            this.set(content);
-            // resetting the directive.
-            this.data.model = '';
-            this.data.isInitialized = false;
-            if (this.isModified() === true) {
-                this.vm.$dispatch('modified');
-            }
-        }.bind(this));
-    },
-    update: function () {
-        this.el.addEventListener("keydown", function (key) {
-            // setting initial html value for safety escape button.
-            if (this.data.isInitialized === false) {
-                this.data.model = this.getContent();
-                this.data.isInitialized = true;
-            }
-            var code = key.keyCode ? key.keyCode : key.which;
-
-            if (this.data.singleLine && this.isNewLine(code)) {
-                key.stopPropagation();
-                key.preventDefault();
-                this.el.blur();
-                this.data.modified = true;
-            } else if (this.isEscape(code)) {
-                this.data.isInitialized = false;
-                this.data.modified = false;
-
-                this.el.innerHTML = this.data.model;
-                this.el.blur();
-            } else {
-                this.data.modified = true;
-            }
-
-        }.bind(this));
-
-    },
-    isNewLine: function (code) {
-        var overrideKeys = [13, 38, 48];
-
-        for(var i in overrideKeys) {
-            if(overrideKeys[i] == code) return true;
-        }
-    },
-    isEscape: function (code) {
-        return code === 27;
-    },
-    isModified: function() {
-        return this.data.modified;
-    },
-    getContent: function () {
-        var content = this.el.innerHTML;
-        // stripped string taken from http://css-tricks.com/snippets/javascript/strip-html-tags-in-javascript/
-        content = content.replace(/&nbsp;/gi,'');
-        content = content.replace(/(<([^>]+)>)/ig,"");
-
-        return content;
-    }
-})
 //Generate UUID
 function generateUUID(){
     var d = new Date().getTime();
@@ -166,68 +86,63 @@ Vue.directive('sortable', {
     }
 })
 //Vue editor directive
-Vue.directive('editor', {
-    twoWay: true,
-    params: ['initial'],
-    bind: function () {
-        this.trumbowyg = $(this.el).trumbowyg({ autogrow: true });
-        $(this.el).trumbowyg().on('tbwchange ', function () {
-            //this.set($(this.el).trumbowyg('html'));
-            this.update();
-        } .bind(this));
-        //$(this.el).trumbowyg('html', this.params.initial);
-    },
-    intitialize: function (value) {
-        //$(this.el).trumbowyg('html', value);
-    },
-    update: function (value, oldValue) {
-        console.log('update');
-        console.log($(this.el).trumbowyg('html'));
-        //$(this.el).trumbowyg('html', this.params.initial);
-        this.set($(this.el).trumbowyg('html'));
-        //$(this.el).trumbowyg('html', this.params.initial);
-    },
-    unbind: function () {
-    }
-})
-
 Vue.directive('tinymce', {
-    twoWay: true,
-    params: ['obj'],
-    paramWatchers: {
-        obj: function (val, oldVal) {
-            console.log('val: ' + val + ' oldval: ' + oldVal)
-            if (this.ed.getContent()!== val){
-                this.ed.setContent(val);
-            }
-        }
-    },
-    bind: function () {
+    twoWay:true,
+    deep:true,
+    params:['obj'],
+    bind: function(){
         var self = this;
+        this.editorValue = '';
         this.editorID = generateUUID();
-        $(this.el).context.id = this.editorID
-        //Creates a new editor instance
-        this.ed = tinymce.EditorManager.createEditor(this.editorID, inlineEditorSimple);
-         this.ed.on('NodeChange', function (e) {
-            if (self.params.obj !== self.ed.getContent({ format: 'html' })){
-                self.params.obj = self.ed.getContent({ format: 'html' })
-                this.update(self.params.obj);
+        this.sel = '#'+ this.editorID;
+        $(this.el).context.id = this.editorID;
+        $(this.el).hover(
+            function(){
+                $(this).addClass('hover');
+                this.editor = tinymce.init({
+                    selector: self.sel,
+                    inline:true,
+                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |colorbox',
+                    menubar: false,
+                    setup: function(ed){
+                        ed.on('NodeChange', function(e){
+                            self.updateobj(ed.getContent());
+                        });
+                        ed.on('keyup', function(e){
+                            self.updateobj(ed.getContent());
+                        });
+                        ed.on('init', function(e){
+                            if (tinymce.EditorManager.editors.length > 1){
+                                tinymce.EditorManager.editors[0].remove();
+                            }
+                            if(ed.id!==tinymce.EditorManager.editors[0].id){
+                                console.log('ERROR!!!!');
+                            }
+                            if (tinymce.EditorManager.editors.length > 1){
+                                console.log('ERROR!!!!!');
+                            }
+                        })
+                        ed.on('remove', function(e){
+                            console.log('remove');
+                        });
+                    }
+                });
+            },
+            function(){
+                $(this).removeClass('hover');
+                self.unbind();
             }
-        } .bind(this));
-        Vue.nextTick (function(){
-            self.ed.render();
-        });
+        )
     },
-    update: function (value) {
-        if ((value)&&(this)){
-            // Set value from editor to object
-            this.set(value);
+    update:function(value){
+        if (value!== undefined){
+            this.el.innerHTML = value;
         }
-        console.log(tinymce.EditorManager)
+    },
+    updateobj:function(content){
+            this.set(content);
     },
     unbind: function () {
-        tinymce.remove(this.editorID);
-        console.log('unbind!');
     }
 })
 //*** DATA STRUCTURE ***
@@ -312,13 +227,13 @@ var childPartial = 'accordion-tab';
 var childPropObj = [
     {
         name: 'title',
-        //value: sampleTitle,
+        value: sampleTitle,
         editable: true,
         type: 'text'
     },
     {
         name: 'content',
-        //value: sampleParagraph,
+        value: sampleParagraph,
         editable: true,
         type: 'text'
     }
@@ -419,7 +334,6 @@ var layoutgrid = new Vue({
     ready: function () {
         var self = this;
         this.UUID = generateUUID();
-        //tinimce.init();
         tinymce.EditorManager.init({});
         console.log('grid is ready');
     },

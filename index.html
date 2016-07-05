@@ -162,13 +162,12 @@
 </template>
 
 <template id="accordion-tab">
-    <div class="ui label" v-bind:class="{'blue': child.editable}"><i class="edit icon" v-on:click="child.toggle()"></i></div>
     <div class="title">
         <i class="dropdown icon"></i>
-        <header style="display:inline-block" v-tinymce="child.properties.title" :obj="child.properties.title"><h3>Title</h3></header>
+        <header style="display:inline-block" v-tinymce="child.properties.title"></header>
     </div>
     <div class="content">
-        <div  v-tinymce="child.properties.content" :obj="child.properties.content"><p>content</p></div>
+        <div  v-tinymce="child.properties.content"></div>
     </div>
 </template>
 

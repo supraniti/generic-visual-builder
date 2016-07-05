@@ -108,3 +108,6 @@ ul ul ul {
 .trumbowyg-box, .trumbowyg-editor {
     min-height: 30px !important;
 }
+.hover{
+    background-color: rgba(243,156,18,.1);
+}
