@@ -27,40 +27,35 @@
     <div class="eight wide column">
         <h3>COMPONENT SETUP</h3>
     <div class="ui inverted form">
+        <select name="Element Classes" multiple="" class="ui fluid dropdown" v-model="context.component.classObject" multiple>
+            <option value="">Classes</option>
+            <option value="styled">Styled</option>
+            <option value="fluid">Fluid</option>
+            <option value="inverted">Inverted</option>
+        </select>
         <ol>
             <li v-for="child in context.component.children">
                 <div class="two fields">
                   <div class="field">  
                     <label>Title</label>
-                    <input placeholder="Tab Title" type="text" v-model="context.component.children[$index].properties.title">
+                    <input placeholder="Tab Title" type="text">
                   </div>
                   <div class="field">
                     <label>Content</label>
-                    <input placeholder="Tab Content" type="text" v-model="context.component.children[$index].properties.content">
+                    <input placeholder="Tab Content" type="text">
                   </div>
                 </div>            
             </li>
         </ol>
-
-        <div class="two fields">
-          <div class="field">
-            <label>class object</label>
-            <input placeholder="Some property" type="text" v-model="context.component.classObject">
-          </div>
-          <div class="field">
-            <label>content</label>
-            <input placeholder="Other Property" type="text" v-model="context.component.content">
-          </div>
-        </div>
     </div>
     </div>
     <div class="eight wide column">
             <h3>COMPONENT PREVIEW</h3>
     <template v-if="context.component">
         <div class="ui segment">
-            <render-main :data="context.component">
-               
-            </render-main>
+            <render-main-class :data="context.component">
+                <render-sub-class v-for="child in context.component.children" :data="child"></render-sub-class>
+            </render-main-class>
         </div>
     </template>
     </div>
@@ -130,7 +125,10 @@
                                                 <a class="item" v-on:click="magicColumnData.removebyindex($index)"><i class="bordered inverted red remove icon"></i></a>
                                             </div>
                                             <!--Renderred content goes here-->
-                                            <render-main :data="magicSlotData.component"></render-main>
+                                            <render-main-class :data="magicSlotData.component">
+                                                <render-sub-class v-for="child in magicSlotData.component.children" :data="child"></render-sub-class>
+                                            </render-main-class>
+                                            <!--render-main :data="magicSlotData.component"></--render-main-->
                                         </li>
                                     </template>
                                 </ul>
@@ -147,6 +145,17 @@
 <!-- TEMPLATES -->
 
 <!-- Template for recursively rendering components -->
+<template id="main-class">
+    <div v-bind:class="data.mainClass.concat(data.classObject)">
+        <slot></slot>
+    </div>
+</template>
+<template id="sub-class">
+    <template v-for="property in data.properties">
+        <partial v-bind:name="property.partial"></partial>
+    </template>
+</template>
+
 <template id="render-main">
     <!-- Render Main -->
     <div v-bind:class="[data.mainClass]">
@@ -161,15 +170,19 @@
     </div>
 </template>
 
-<template id="accordion-tab">
+<template id="accordion-title">
     <div class="title">
         <i class="dropdown icon"></i>
-        <header style="display:inline-block" v-tinymce="child.properties.title"></header>
-    </div>
-    <div class="content">
-        <div  v-tinymce="child.properties.content"></div>
+        <header style="display:inline-block" v-tinymce="property.value"></header>
     </div>
 </template>
+<template id="accordion-content">
+    <div class="content">
+        <div  v-tinymce="property.value"></div>
+    </div>
+</template>
+
+
 
 <template id="editable-content">
     <div class="ui fitted slider checkbox">

@@ -221,7 +221,7 @@ var textContentConstructor = function () {
 
 //ACCORDION SCRIPT
 var type = 'nested';
-var mainclass = 'ui accordion';
+var mainclass = ['ui' ,'accordion'];
 var propObj = {};
 var childPartial = 'accordion-tab';
 var childPropObj = [
@@ -229,13 +229,13 @@ var childPropObj = [
         name: 'title',
         value: sampleTitle,
         editable: true,
-        type: 'text'
+        partial: 'accordion-title'
     },
     {
         name: 'content',
         value: sampleParagraph,
         editable: true,
-        type: 'text'
+        partial: 'accordion-content'
     }
 ];
 var childCount = 3;
@@ -255,7 +255,7 @@ var abstractComplexComponent = function (type, mainclass, propObj, childPropObj,
     //this.sampleParagraph = sampleParagraph;
     this.readyFunction = readyFunction;
     this.mainClass = mainclass;
-    this.classObject = {};
+    this.classObject = [];
     this.styleObject = {};
     this.content = {};
     this.partialTemplate = '';
@@ -263,7 +263,7 @@ var abstractComplexComponent = function (type, mainclass, propObj, childPropObj,
         var child = new abstractComponentChild();
         child.partial = childPartial;
         for (var i = 0; i < childPropObj.length; i += 1) {
-            child.properties[childPropObj[i].name] = childPropObj[i].value;
+            child.properties.push(new abstractComponentProperty(childPropObj[i].name, childPropObj[i].value, childPropObj[i].editable, childPropObj[i].partial));
         }
         this.children.push(child);
     };
@@ -279,7 +279,7 @@ var abstractComplexComponent = function (type, mainclass, propObj, childPropObj,
         //simple constructor
     }
     for (var k = 0; k < propObj.length; k += 1) {
-        this.properties.push(new abstractComponentProperty(propObj[j].name, propObj[j].value));
+        this.properties.push(new abstractComponentProperty(propObj[j].name, propObj[j].value, propObj[j].editable, propObj[j].partial));
     }
 }
 var abstractComponentChild = function () {
@@ -288,17 +288,17 @@ var abstractComponentChild = function () {
     this.subObjects = [];
     this.classObject = {};
     this.styleObject = {};
-    this.properties = {};
+    this.properties = [];
     this.editable = false;
     this.toggle = function () {
         this.editable = !this.editable;
     };
 }
-var abstractComponentProperty = function (name, value) {
-    var self = this;
-    this[name] = value;
-    //this.name = name;
-    //this.value = value;
+var abstractComponentProperty = function (name, value, editable, partial) {
+    this.name = name;
+    this.value = value;
+    this.editable = editable;
+    this.partial = partial;
 }
 
 // GRID
@@ -398,23 +398,45 @@ var layoutgrid = new Vue({
                 }
             },
             partials: {
-                'accordion-tab': '#accordion-tab',
+                'accordion-tab': '#accordion-tab'
             }
         },
-        'render-context': {
+        'render-main-class':{
             props: ['data'],
-            template: "#render-context",
-            name: 'render-context',
+            template: "#main-class",
+            name: 'render-main-class',
             ready: function () {
-                var self = this;
-                if (this.data.parent) {
-                    this.data.readyFunction();
-                    console.log('component is ready');
-                }
+                this.data.readyFunction();
+                $('.ui.dropdown')
+                    .dropdown()
+                ;
+                console.log('component is ready');
             },
             partials: {
-                'accordion-tab': '#accordion-tab',
             }
+        },
+        'render-sub-class':{
+            props: ['data'],
+            template: "#sub-class",
+            name: 'render-sub-class',
+            ready: function () {
+                console.log('sub-component is ready');
+            },
+            partials: {
+                'accordion-title': '#accordion-title',
+                'accordion-content': '#accordion-content'
+            }
+        },
+        'render-editable-content':{
+            props: ['data'],
+            template: '<div>555</div>',
+            name: 'render-editable-content',
+            ready: function () {
+                console.log('editable-content is ready');
+            }
+        },
+        'render-component-options':{
+
         }
     }
 })
