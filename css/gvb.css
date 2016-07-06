@@ -19,7 +19,6 @@ ul ul ul {
 }
 .editable .magicrow:hover {
     box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
-    background-color: white;
 }
 .editable .magicrow {
     margin-bottom: 10px;
@@ -37,13 +36,17 @@ ul ul ul {
 }
 .editable .wpbcolumns{
     min-height: 100px;
-    margin: 0 !important; 
+    margin: 0 !important;
 }
 .editable .wpbcomponents{
     list-style-type: none;
     min-height: 50px;
-    padding: 0 !important; 
+    padding: 0 !important;
     margin: 0 !important;
+}
+.wpbcomponents{
+    list-style-type: none;
+    padding: 0 !important;
 }
 .editable .magiccolumn{
     border-right: 1px dotted gray;
@@ -100,7 +103,6 @@ ul ul ul {
     //padding: 0 !important;
 }
 
-
-.trumbowyg-box, .trumbowyg-editor {
-    min-height: 30px !important;
+.editable [contenteditable="true"]:hover, .component-context [contenteditable="true"]:hover{
+    box-shadow: 0px 0px 10px 5px rgba(255,182,193,1);
 }

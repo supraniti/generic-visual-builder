@@ -1,83 +1,5 @@
-var inlineEditorSimple={
-    inline: true,
-    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |colorbox',
-    menubar: false
-};
-
-Vue.directive('editable', {
-  twoWay: true,
-  data: {
-    singleLine: true,
-    model : '',
-    isInitialized : false,
-    modified: false
-  },
-  params: ['editable-multiline'],
-  bind: function () {
-    if(this.params.editableMultiline) {
-      this.data.singleLine = false;
-    }
-    this.el.setAttribute("contenteditable", "");
-    this.el.addEventListener("blur", function (event) {
-        var content = this.getContent();
-        this.set(content);
-        // resetting the directive.
-        this.data.model = '';
-        this.data.isInitialized = false;
-        if (this.isModified() === true) {
-            this.vm.$dispatch('modified');
-        }
-    }.bind(this));
-  },
-  update: function () {
-    this.el.addEventListener("keydown", function (key) {
-      // setting initial html value for safety escape button.
-      if (this.data.isInitialized === false) {
-        this.data.model = this.getContent();
-        this.data.isInitialized = true;
-      }
-      var code = key.keyCode ? key.keyCode : key.which;
-
-      if (this.data.singleLine && this.isNewLine(code)) {
-        key.stopPropagation();
-        key.preventDefault();
-        this.el.blur();
-        this.data.modified = true;
-      } else if (this.isEscape(code)) {
-        this.data.isInitialized = false;
-        this.data.modified = false;
-
-        this.el.innerHTML = this.data.model;
-        this.el.blur();
-      } else {
-        this.data.modified = true;
-      }
-
-    }.bind(this));
-
-  },
-  isNewLine: function (code) {
-    var overrideKeys = [13, 38, 48];
-
-    for(var i in overrideKeys) {
-        if(overrideKeys[i] == code) return true;
-    }
-  },
-  isEscape: function (code) {
-    return code === 27;
-  },
-  isModified: function() {
-    return this.data.modified;
-  },
-  getContent: function () {
-    var content = this.el.innerHTML;
-    // stripped string taken from http://css-tricks.com/snippets/javascript/strip-html-tags-in-javascript/
-    content = content.replace(/&nbsp;/gi,'');
-    content = content.replace(/(<([^>]+)>)/ig,"");
-
-    return content;
-  }
-})
+var sampleTitle = '<h3>Lorem ipsum dolor sit amet</h3>';
+var sampleParagraph = '<p>Suspendisse enim velit, porta et urna at, vehicula interdum sapien. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ipsum augue, condimentum rhoncus est quis, cursus dignissim sapien. Fusce id interdum nunc. Suspendisse neque tellus, aliquam quis maximus sit amet, ultricies vel ipsum. Proin porttitor massa ut pharetra convallis. Sed ligula odio, scelerisque eget sapien at, pretium venenatis arcu. Nulla facilisi.</p>';
 //Generate UUID
 function generateUUID(){
     var d = new Date().getTime();
@@ -164,58 +86,61 @@ Vue.directive('sortable', {
     }
 })
 //Vue editor directive
-Vue.directive('editor', {
-    twoWay: true,
-    params: ['initial'],
-    bind: function () {
-        this.trumbowyg = $(this.el).trumbowyg({ autogrow: true });
-        $(this.el).trumbowyg().on('tbwchange ', function () {
-            //this.set($(this.el).trumbowyg('html'));
-            this.update();
-        } .bind(this));
-        //$(this.el).trumbowyg('html', this.params.initial);
-    },
-    intitialize: function (value) {
-        //$(this.el).trumbowyg('html', value);
-    },
-    update: function (value, oldValue) {
-        console.log('update');
-        console.log($(this.el).trumbowyg('html'));
-        //$(this.el).trumbowyg('html', this.params.initial);
-        this.set($(this.el).trumbowyg('html'));
-        //$(this.el).trumbowyg('html', this.params.initial);
-    },
-    unbind: function () {
-    }
-})
-
 Vue.directive('tinymce', {
-    twoWay: true,
-    params: ['initial'],
-    bind: function () {
+    twoWay:true,
+    deep:true,
+    params:['obj'],
+    bind: function(){
         var self = this;
+        this.editorValue = '';
         this.editorID = generateUUID();
-        $(this.el).context.id = this.editorID
-        //Creates a new editor instance
-        this.ed = tinymce.EditorManager.createEditor(this.editorID, inlineEditorSimple);
-        console.log(tinymce.EditorManager);
-        this.ed.on('show', function (e) {
-            console.log(this.editorID);
-            console.log('shown!');
-        });
-        this.ed.on('change', function (e) {
-            console.log(self.ed.getContent({ format: 'html' }));
-            this.update(self.ed.getContent({ format: 'html' }));
-        } .bind(this));
-        Vue.nextTick (function(){
-            self.ed.render();
-        })
+        this.sel = '#'+ this.editorID;
+        $(this.el).context.id = this.editorID;
+        $(this.el).hover(
+            function(){
+                this.editor = tinymce.init({
+                    selector: self.sel,
+                    inline:true,
+                    toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent |colorbox',
+                    menubar: false,
+                    setup: function(ed){
+                        ed.on('NodeChange', function(e){
+                            self.updateobj(ed.getContent());
+                        });
+                        ed.on('keyup', function(e){
+                            self.updateobj(ed.getContent());
+                        });
+                        ed.on('init', function(e){
+                            if (tinymce.EditorManager.editors.length > 1){
+                                tinymce.EditorManager.editors[0].remove();
+                            }
+                            if(ed.id!==tinymce.EditorManager.editors[0].id){
+                                console.log('ERROR!!!!');
+                            }
+                            if (tinymce.EditorManager.editors.length > 1){
+                                console.log('ERROR!!!!!');
+                            }
+                        })
+                        ed.on('remove', function(e){
+                            console.log('remove');
+                        });
+                    }
+                });
+            },
+            function(){
+                self.unbind();
+            }
+        )
     },
-    update: function (value) {
-        this.set(value);
+    update:function(value){
+        if (value!== undefined){
+            this.el.innerHTML = value;
+        }
+    },
+    updateobj:function(content){
+            this.set(content);
     },
     unbind: function () {
-        tinymce.remove(this.editorID);
     }
 })
 //*** DATA STRUCTURE ***
@@ -246,7 +171,7 @@ var magicColumnData = function () {
     self.UUID = generateUUID();
     self.magicSlots = [];
     self.iscontext = false;
-    self.colwidth = 3;
+    self.colwidth = 7;
     self.addMagic = function (magicSlotData) {
         self.magicSlots.splice(0, 0, magicSlotData);
     };
@@ -255,12 +180,12 @@ var magicColumnData = function () {
             this.magicSlots.splice(index, 1)
         }
     },
-    self.context = function () {
-        layoutgrid.context.iscontext = false;
-        self.iscontext = true;
-        layoutgrid.context = this;
-        $('.col-context').sidebar('toggle');
-    };
+        self.context = function () {
+            layoutgrid.context.iscontext = false;
+            self.iscontext = true;
+            layoutgrid.context = this;
+            $('.col-context').sidebar('toggle');
+        };
     self.getwidth = function () {
         return layoutgrid.sizing[self.colwidth];
     };
@@ -294,21 +219,21 @@ var textContentConstructor = function () {
 
 //ACCORDION SCRIPT
 var type = 'nested';
-var mainclass = 'ui accordion';
+var mainclass = ['ui' ,'accordion'];
 var propObj = {};
 var childPartial = 'accordion-tab';
 var childPropObj = [
     {
         name: 'title',
-        value: 'title place holder',
+        value: sampleTitle,
         editable: true,
-        type: 'text'
+        partial: 'accordion-title'
     },
     {
         name: 'content',
-        value: 'content place holder',
+        value: sampleParagraph,
         editable: true,
-        type: 'text'
+        partial: 'accordion-content'
     }
 ];
 var childCount = 3;
@@ -326,23 +251,44 @@ var abstractComplexComponent = function (type, mainclass, propObj, childPropObj,
     this.properties = [];
     this.readyFunction = readyFunction;
     this.mainClass = mainclass;
-    this.classObject = {};
+    this.classObject = [];
+    this.segmentClassA=[];
+    this.segmentClassB=[];
+    this.segmentClassC=[];
+    this.segmentClassD=[];
+    this.segmentClassE=[];
     this.styleObject = {};
     this.content = {};
+    this.inverted = false;
+    this.toggleInvert = function(){
+        if(!this.inverted){
+            this.inverted = true;
+            this.classObject.push('inverted');
+            this.segmentClassA.push('inverted');
+        }
+        else{
+            this.inverted = false;
+            this.classObject.splice(this.classObject.indexOf('inverted'),1);
+            this.segmentClassA.splice(this.segmentClassA.indexOf('inverted'),1);
+        }
+    }
     this.partialTemplate = '';
     this.addMagic = function (childPropObj) {
         var child = new abstractComponentChild();
         child.partial = childPartial;
         for (var i = 0; i < childPropObj.length; i += 1) {
-            child.properties[childPropObj[i].name] = childPropObj[i].value;
+            child.properties.push(new abstractComponentProperty(childPropObj[i].name, childPropObj[i].value, childPropObj[i].editable, childPropObj[i].partial));
         }
         this.children.push(child);
     };
-    this.removeMagic = function (index) {
+    this.removebyindex = function (index) {
         this.children.splice(index, 1);
     }
+    this.setActive = function(index) {
+        this.children[index].toggleActive();
+    }
     if (type !== 'simple') {
-         for (var i = 0; i < childCount; i += 1) {
+        for (var i = 0; i < childCount; i += 1) {
             this.addMagic(childPropObj);
         }
     }
@@ -350,7 +296,7 @@ var abstractComplexComponent = function (type, mainclass, propObj, childPropObj,
         //simple constructor
     }
     for (var k = 0; k < propObj.length; k += 1) {
-        this.properties.push(new abstractComponentProperty(propObj[j].name, propObj[j].value));
+        this.properties.push(new abstractComponentProperty(propObj[j].name, propObj[j].value, propObj[j].editable, propObj[j].partial));
     }
 }
 var abstractComponentChild = function () {
@@ -359,74 +305,27 @@ var abstractComponentChild = function () {
     this.subObjects = [];
     this.classObject = {};
     this.styleObject = {};
-    this.properties = {};
+    this.properties = [];
     this.editable = false;
-    this.toggle = function () {
-        if (this.editable) {
-            this.editable = false;
-        }
-        else {
-            this.editable = true;
-        }
+    this.activeOnStart = false;
+    this.toggleActive = function(){
+        this.activeOnStart = !this.activeOnStart;
     }
+    this.toggle = function () {
+        this.editable = !this.editable;
+    };
 }
-var abstractComponentProperty = function (name, value) {
-    var self = this;
-    this[name] = value;
-    //this.name = name;
-    //this.value = value;
+var abstractComponentProperty = function (name, value, editable, partial) {
+    this.name = name;
+    this.value = value;
+    this.editable = editable;
+    this.partial = partial;
 }
 
 // GRID
 var layoutgrid = new Vue({
     el: 'body',
     data: {
-        msg: 'hellp',
-        variablecheck: {
-            name: "editable content",
-            editor: false,
-            html: 'place your content here',
-            toggle: function () {
-                if (this.editor) {
-                    this.editor = false;
-                    //$('#trumbowyg-demo').trumbowyg('destroy');
-                }
-                else {
-                    this.editor = true;
-                    //$('#trumbowyg-demo').trumbowyg();
-                }
-            }
-        },
-        variablecheck1: {
-            name: "editable content",
-            editor: false,
-            html: 'place your content here',
-            toggle: function () {
-                if (this.editor) {
-                    this.editor = false;
-                    //$('#trumbowyg-demo').trumbowyg('destroy');
-                }
-                else {
-                    this.editor = true;
-                    //$('#trumbowyg-demo').trumbowyg();
-                }
-            }
-        },
-        variablecheck2: {
-            name: "editable content",
-            editor: false,
-            html: 'place your content here',
-            toggle: function () {
-                if (this.editor) {
-                    this.editor = false;
-                    //$('#trumbowyg-demo').trumbowyg('destroy');
-                }
-                else {
-                    this.editor = true;
-                    //$('#trumbowyg-demo').trumbowyg();
-                }
-            }
-        },
         UUID: '',
         magicRows: [],
         context: {},
@@ -456,7 +355,6 @@ var layoutgrid = new Vue({
     ready: function () {
         var self = this;
         this.UUID = generateUUID();
-        //tinimce.init();
         tinymce.EditorManager.init({});
         console.log('grid is ready');
     },
@@ -509,60 +407,60 @@ var layoutgrid = new Vue({
         }
     },
     components: {
-        'render-main': {
+        'render-main-class':{
             props: ['data'],
-            template: "#render-main",
-            name: 'render-content',
+            template: "#main-class",
+            name: 'render-main-class',
             ready: function () {
-                var self = this;
-                if (this.data.parent) {
-                    this.data.readyFunction();
-                    console.log('component is ready');
-                }
+                console.log(this.data);
+                this.data.readyFunction();
+                $('.ui.dropdown').dropdown();
+                $('.ui.checkbox').checkbox();
+                console.log('component is ready');
             },
             partials: {
-                'accordion-tab': '#accordion-tab',
-                'accordion-tab-2': '#accordion-tab-2',
-                'text-content': '#text-content'
-
-            },
-            components: {
-
             }
         },
-        'render-child': {
+        'render-sub-class':{
             props: ['data'],
-            template: "#render-child",
-            name: 'render-child',
+            template: "#sub-class",
+            name: 'render-sub-class',
             ready: function () {
-                var self = this;
-                console.log('child is ready');
+                console.log('sub-component is ready');
             },
             partials: {
-                'accordion-tab': '#accordion-tab',
-                'accordion-tab-2': '#accordion-tab-2',
-                'text-content': '#text-content'
+                'accordion-title': '#accordion-title',
+                'accordion-content': '#accordion-content'
             }
         },
-        'editable-content': {
-            props: ['data'],
-            template: "#editable-content",
+        'render-sub-class-context':{
+            props: ['data','index'],
+            template: "#sub-class-context",
+            name: 'render-sub-class-context',
             ready: function () {
-                var self = this;
-                $(this.el).trumbowyg({ autogrow: true });
-                $(this.el).trumbowyg('html', this.data.properties.content);
-                $(this.el).trumbowyg().on('tbwchange ', function () {
-                    self.update();
-                });
+                console.log('sub-component is ready');
             },
-            update: function () {
-                this.data.properties.content.set($(this.el).trumbowyg('html'));
+            partials: {
+                'accordion-title': '#accordion-title',
+                'accordion-content': '#accordion-content'
             }
-            //$(this.el).trumbowyg({ autogrow: true });
-            //$(this.el).trumbowyg('html', self);
-            //$(this.el).trumbowyg().on('tbwchange ', function () {
-            //  self.update();
-            //});
+        },
+        'render-editable-content':{
+            props: ['data'],
+            template: '<div>555</div>',
+            name: 'render-editable-content',
+            ready: function () {
+                console.log('editable-content is ready');
+            }
+        },
+        'render-component-options':{
+
         }
     }
 })
+
+
+
+//////KNOWN BUGS//////
+// inverted and styled collision
+// when removing a child - make sure to remove co-responding tinymce editors
