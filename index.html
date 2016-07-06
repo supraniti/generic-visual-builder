@@ -23,40 +23,65 @@
         <div class="two wide column"><a class="item" v-on:click="setup('text')"><i class="copy icon"></i>Text</a></div>
     </div>
 </div>
-<div class="ui top labeled grid sidebar inverted segment component-context">
+<div class="ui top labeled grid sidebar segment component-context">
+    <template v-if="context.component">
     <div class="eight wide column">
-        <h3>COMPONENT SETUP</h3>
-    <div class="ui inverted form">
-        <select name="Element Classes" multiple="" class="ui fluid dropdown" v-model="context.component.classObject" multiple>
-            <option value="">Classes</option>
-            <option value="styled">Styled</option>
-            <option value="fluid">Fluid</option>
-            <option value="inverted">Inverted</option>
-        </select>
+
+        <h3>CLASS AND STYLE SETUP</h3>
+        <div class="ui form">
+            <h5>SEGMENT SETUP</h5>
+                <div class="inline fields">
+                    <label>Segment Style</label>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" value="" checked="" tabindex="0" class="hidden" v-model="context.component.segmentClassB">
+                            <label>Default</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" value="basic" tabindex="0" class="hidden" v-model="context.component.segmentClassB">
+                            <label>Basic</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" value="stacked" tabindex="0" class="hidden" v-model="context.component.segmentClassB">
+                            <label>Stacked</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" value="piled" tabindex="0" class="hidden" v-model="context.component.segmentClassB">
+                            <label>Piled</label>
+                        </div>
+                    </div>
+                </div>
+
+            <select name="Segment Type" multiple="" class="ui fluid dropdown" v-model="context.component.segmentClassC" multiple>
+                <option value="">Types</option>
+                <option value="basic">Basic</option>
+                <option value="stacked">Stacked</option>
+                <option value="piled">Piled</option>
+            </select>
+            <h5>COMPONENT SETUP</h5>
+            <select name="Element Classes" multiple="" class="ui fluid dropdown" v-model="context.component.classObject" multiple>
+                <option value="">Classes</option>
+                <option value="styled">Styled</option>
+                <option value="fluid">Fluid</option>
+            </select>
         <ol>
             <li v-for="child in context.component.children">
-                <div class="two fields">
-                  <div class="field">  
-                    <label>Title</label>
-                    <input placeholder="Tab Title" type="text">
-                  </div>
-                  <div class="field">
-                    <label>Content</label>
-                    <input placeholder="Tab Content" type="text">
-                  </div>
-                </div>            
+                <p>placeholder</p>
             </li>
         </ol>
     </div>
     </div>
     <div class="eight wide column">
             <h3>COMPONENT PREVIEW</h3>
-    <template v-if="context.component">
-        <div class="ui segment">
-            <render-main-class :data="context.component">
-                <render-sub-class v-for="child in context.component.children" :data="child"></render-sub-class>
-            </render-main-class>
-        </div>
+        <render-main-class :data="context.component">
+            <render-sub-class-context v-for="child in context.component.children" :data="child" :index="$index"></render-sub-class-context>
+        </render-main-class>
     </template>
     </div>
 </div>
@@ -122,13 +147,13 @@
                                             <div class="slot-panel">
                                                 <a class="item slothandle"><i class="bordered inverted move icon"></i></a>
                                                 <a class="item" v-on:click="magicSlotData.context()"><i class="bordered inverted wrench icon"></i></a>
+                                                <a class="item" v-on:click="magicSlotData.component.toggleInvert()"><i class="bordered inverted adjust icon"></i></a>
                                                 <a class="item" v-on:click="magicColumnData.removebyindex($index)"><i class="bordered inverted red remove icon"></i></a>
                                             </div>
                                             <!--Renderred content goes here-->
                                             <render-main-class :data="magicSlotData.component">
                                                 <render-sub-class v-for="child in magicSlotData.component.children" :data="child"></render-sub-class>
                                             </render-main-class>
-                                            <!--render-main :data="magicSlotData.component"></--render-main-->
                                         </li>
                                     </template>
                                 </ul>
@@ -146,8 +171,10 @@
 
 <!-- Template for recursively rendering components -->
 <template id="main-class">
-    <div v-bind:class="data.mainClass.concat(data.classObject)">
-        <slot></slot>
+    <div class="ui segment" v-bind:class="data.segmentClassA.concat(data.segmentClassB).concat(data.segmentClassC)">
+        <div v-bind:class="data.mainClass.concat(data.classObject)">
+            <slot></slot>
+        </div>
     </div>
 </template>
 <template id="sub-class">
@@ -156,18 +183,12 @@
     </template>
 </template>
 
-<template id="render-main">
-    <!-- Render Main -->
-    <div v-bind:class="[data.mainClass]">
-        <!-- Render sub-components -->
-        <template v-for="child in data.children">
-            <partial v-bind:name="child.partial"></partial>
-        </template>
-        <!-- Drag and Drop Slot -->
-        <div>***</div>
-        <!-- Render Nested Components -->
-        <render-main v-for="component in data.subObjects" :data="component"></render-main>
-    </div>
+<template id="sub-class-context">
+    <a class="item" v-on:click="$parent.data.removebyindex(index)"><i class="bordered inverted red remove icon"></i></a>
+    <a class="item" v-on:click="$parent.data.setActive(index)"><i class="bordered inverted idea icon" v-bind:class="{'green' : data.activeOnStart}"></i>Active on pageload:{{data.activeOnStart}}</a>
+    <template v-for="property in data.properties">
+        <partial v-bind:name="property.partial"></partial>
+    </template>
 </template>
 
 <template id="accordion-title">

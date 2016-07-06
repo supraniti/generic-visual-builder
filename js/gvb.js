@@ -98,7 +98,6 @@ Vue.directive('tinymce', {
         $(this.el).context.id = this.editorID;
         $(this.el).hover(
             function(){
-                $(this).addClass('hover');
                 this.editor = tinymce.init({
                     selector: self.sel,
                     inline:true,
@@ -129,7 +128,6 @@ Vue.directive('tinymce', {
                 });
             },
             function(){
-                $(this).removeClass('hover');
                 self.unbind();
             }
         )
@@ -173,7 +171,7 @@ var magicColumnData = function () {
     self.UUID = generateUUID();
     self.magicSlots = [];
     self.iscontext = false;
-    self.colwidth = 3;
+    self.colwidth = 7;
     self.addMagic = function (magicSlotData) {
         self.magicSlots.splice(0, 0, magicSlotData);
     };
@@ -251,13 +249,29 @@ var abstractComplexComponent = function (type, mainclass, propObj, childPropObj,
     this.children = [];
     this.subObjects = [];
     this.properties = [];
-    //this.sampleTitle = sampleTitle;
-    //this.sampleParagraph = sampleParagraph;
     this.readyFunction = readyFunction;
     this.mainClass = mainclass;
     this.classObject = [];
+    this.segmentClassA=[];
+    this.segmentClassB=[];
+    this.segmentClassC=[];
+    this.segmentClassD=[];
+    this.segmentClassE=[];
     this.styleObject = {};
     this.content = {};
+    this.inverted = false;
+    this.toggleInvert = function(){
+        if(!this.inverted){
+            this.inverted = true;
+            this.classObject.push('inverted');
+            this.segmentClassA.push('inverted');
+        }
+        else{
+            this.inverted = false;
+            this.classObject.splice(this.classObject.indexOf('inverted'),1);
+            this.segmentClassA.splice(this.segmentClassA.indexOf('inverted'),1);
+        }
+    }
     this.partialTemplate = '';
     this.addMagic = function (childPropObj) {
         var child = new abstractComponentChild();
@@ -267,8 +281,11 @@ var abstractComplexComponent = function (type, mainclass, propObj, childPropObj,
         }
         this.children.push(child);
     };
-    this.removeMagic = function (index) {
+    this.removebyindex = function (index) {
         this.children.splice(index, 1);
+    }
+    this.setActive = function(index) {
+        this.children[index].toggleActive();
     }
     if (type !== 'simple') {
         for (var i = 0; i < childCount; i += 1) {
@@ -290,6 +307,10 @@ var abstractComponentChild = function () {
     this.styleObject = {};
     this.properties = [];
     this.editable = false;
+    this.activeOnStart = false;
+    this.toggleActive = function(){
+        this.activeOnStart = !this.activeOnStart;
+    }
     this.toggle = function () {
         this.editable = !this.editable;
     };
@@ -386,30 +407,15 @@ var layoutgrid = new Vue({
         }
     },
     components: {
-        'render-main': {
-            props: ['data'],
-            template: "#render-main",
-            name: 'render-content',
-            ready: function () {
-                var self = this;
-                if (this.data.parent) {
-                    this.data.readyFunction();
-                    console.log('component is ready');
-                }
-            },
-            partials: {
-                'accordion-tab': '#accordion-tab'
-            }
-        },
         'render-main-class':{
             props: ['data'],
             template: "#main-class",
             name: 'render-main-class',
             ready: function () {
+                console.log(this.data);
                 this.data.readyFunction();
-                $('.ui.dropdown')
-                    .dropdown()
-                ;
+                $('.ui.dropdown').dropdown();
+                $('.ui.checkbox').checkbox();
                 console.log('component is ready');
             },
             partials: {
@@ -419,6 +425,18 @@ var layoutgrid = new Vue({
             props: ['data'],
             template: "#sub-class",
             name: 'render-sub-class',
+            ready: function () {
+                console.log('sub-component is ready');
+            },
+            partials: {
+                'accordion-title': '#accordion-title',
+                'accordion-content': '#accordion-content'
+            }
+        },
+        'render-sub-class-context':{
+            props: ['data','index'],
+            template: "#sub-class-context",
+            name: 'render-sub-class-context',
             ready: function () {
                 console.log('sub-component is ready');
             },
@@ -440,3 +458,9 @@ var layoutgrid = new Vue({
         }
     }
 })
+
+
+
+//////KNOWN BUGS//////
+// inverted and styled collision
+// when removing a child - make sure to remove co-responding tinymce editors
