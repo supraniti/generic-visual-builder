@@ -16,6 +16,11 @@
     <script src="/generic-visual-builder/js/tinymce/tinymce.min.js"></script>
 </head>
 <body>
+<div class="ui basic modal colorpalette">
+    <template v-if="context.component">
+        <color-palette :context="context" :palette="basicColors"></color-palette>
+    </template>
+</div>
 <div class="ui grid top sidebar inverted labeled icon menu catalog">
     <div class="row">
         <div class="two wide column"><a class="item"><i class="camera retro icon"></i>{{context.UUID}}</a></div>
@@ -26,12 +31,11 @@
 <div class="ui top labeled grid sidebar segment component-context">
     <template v-if="context.component">
     <div class="eight wide column">
-
         <h3>CLASS AND STYLE SETUP</h3>
         <div class="ui form">
             <h5>SEGMENT SETUP</h5>
                 <div class="inline fields">
-                    <label>Segment Style</label>
+                    <label>Segment Style:</label>
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" value="" checked="" tabindex="0" class="hidden" v-model="context.component.segmentClassB">
@@ -52,19 +56,60 @@
                     </div>
                     <div class="field">
                         <div class="ui radio checkbox">
+                            <input type="radio" value="raised" tabindex="0" class="hidden" v-model="context.component.segmentClassB">
+                            <label>Raised</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
                             <input type="radio" value="piled" tabindex="0" class="hidden" v-model="context.component.segmentClassB">
                             <label>Piled</label>
                         </div>
                     </div>
                 </div>
-
-            <select name="Segment Type" multiple="" class="ui fluid dropdown" v-model="context.component.segmentClassC" multiple>
-                <option value="">Types</option>
-                <option value="basic">Basic</option>
-                <option value="stacked">Stacked</option>
-                <option value="piled">Piled</option>
-            </select>
+                <div class="inline fields">
+                <label>Segment Emphasis:</label>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input type="radio" value="" checked="" tabindex="0" class="hidden" v-model="context.component.segmentClassD">
+                        <label>Default</label>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input type="radio" value="secondary" tabindex="0" class="hidden" v-model="context.component.segmentClassD">
+                        <label>Secondary</label>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui radio checkbox">
+                        <input type="radio" value="tertiary" tabindex="0" class="hidden" v-model="context.component.segmentClassD">
+                        <label>Tertiary</label>
+                    </div>
+                </div>
+            </div>
+            <div class="inline fields">
+                <label>Segment Color:</label>
+                <div class="ui icon search dropdown button colorpicker">
+                    <i class="paint brush icon" :class="context.component.colorClass"></i>
+                    <span class="text">Default</span>
+                    <div class="menu">
+                        <div class="ui icon search input">
+                            <i class="search icon"></i>
+                            <input type="text" placeholder="Search color...">
+                        </div>
+                        <template v-for="color in coloring">
+                            <div class="ui center aligned segment" :class="color.value">
+                                <div class="item" data-value="{{color.value}}">{{color.name}}</div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
             <h5>COMPONENT SETUP</h5>
+
+            <button class="ui green button" v-on:click="context.component.addMagic(context.component.childPropObj)">Add Accordion Tab</button>
+            <button class="ui red button" v-on:click="invoke()">ColorPalette</button>
             <select name="Element Classes" multiple="" class="ui fluid dropdown" v-model="context.component.classObject" multiple>
                 <option value="">Classes</option>
                 <option value="styled">Styled</option>
@@ -84,7 +129,6 @@
         </render-main-class>
     </template>
     </div>
-</div>
 <div class="ui left labeled icon sidebar inverted vertical menu row-context">
     <div class="item"><i class="camera retro icon"></i>{{context.UUID}}</div>
     <a class="item" v-on:click="context.addMagic()"><i class="columns icon"></i>Add Column</a>
@@ -132,7 +176,7 @@
                         <a class="item" v-on:click="removebyindex($index)"><i class="red remove icon"></i></a>
                     </div>
                     <!--Columns-->
-                    <ul class="ui grid container wpbcolumns" v-sortable handle=".columnhandle" placeholder = "column-placeholder" connectwith="ul.wpbcolumns">
+                    <ul class="ui grid stackable container wpbcolumns" v-sortable handle=".columnhandle" placeholder = "column-placeholder" connectwith="ul.wpbcolumns">
                         <template v-for="magicColumnData in magicRowData.magicColumns">
                             <li class="magiccolumn" v-bind:class="[{'context': magicColumnData.iscontext}, magicColumnData.getwidth()]">
                                 <div class="ui inverted top attached segment col-panel">
@@ -171,8 +215,8 @@
 
 <!-- Template for recursively rendering components -->
 <template id="main-class">
-    <div class="ui segment" v-bind:class="data.segmentClassA.concat(data.segmentClassB).concat(data.segmentClassC)">
-        <div v-bind:class="data.mainClass.concat(data.classObject)">
+    <div class="ui segment" v-bind:class="calculatedClass">
+        <div v-bind:class="calculatedClass2">
             <slot></slot>
         </div>
     </div>
@@ -194,7 +238,7 @@
 <template id="accordion-title">
     <div class="title">
         <i class="dropdown icon"></i>
-        <header style="display:inline-block" v-tinymce="property.value"></header>
+        <div style="display:inline-block" v-tinymce="property.value"></div>
     </div>
 </template>
 <template id="accordion-content">
@@ -219,11 +263,22 @@
 
 </template>
 
-<template id="text-content">
-    <div class="content" v-bind:class="[{'active': active},data.firstClass]">
-        {{data.content.content}}
+<template id="color-palette">
+    <h3>Basic Color Palette</h3>
+    <div class="ui equal width center aligned padded grid">
+        <template v-for="color in palette">
+            <div class="row">
+                <div class="column">
+                    <div class="ui fluid segment" :class="color.value" style="color:black" v-on:click="updateColor(color.value, false)">{{color.name}}</div>
+                </div>
+                <div class="column">
+                    <div class="ui fluid inverted segment" :class="color.value" v-on:click="updateColor(color.value, true)">Inverted {{color.name}}</div>
+                </div>
+            </div>
+        </template>
     </div>
 </template>
+
 <!-- VUE JavaScript -->
 <script src="/generic-visual-builder/js/vue.min.js"></script>
 <!-- APP JavaScript -->

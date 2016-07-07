@@ -66,6 +66,7 @@ Vue.directive('sortable', {
             connectWith: self.params.connectwith,
             handle: self.params.handle,
             placeholder: self.params.placeholder,
+            forcePlaceholderSize: true,
             start: function (e, ui) {
                 $(this).data('previndex', walk(ui.item));
             },
@@ -244,7 +245,8 @@ function readyFunction() {
 //COMPONENT STRUCTURE
 var abstractComplexComponent = function (type, mainclass, propObj, childPropObj, childPartial, childCount, readyFunction) {
     var self = this;
-    this.parent = true;
+    this.parentClass = 'ui segment';
+    this.childPropObj = childPropObj;
     this.type = type; //threaded/nested/simple
     this.children = [];
     this.subObjects = [];
@@ -258,18 +260,23 @@ var abstractComplexComponent = function (type, mainclass, propObj, childPropObj,
     this.segmentClassD=[];
     this.segmentClassE=[];
     this.styleObject = {};
+    this.colorClass = [];
     this.content = {};
-    this.inverted = false;
-    this.toggleInvert = function(){
-        if(!this.inverted){
-            this.inverted = true;
-            this.classObject.push('inverted');
-            this.segmentClassA.push('inverted');
+    this.inverted = [];
+    this.invert = function(bool){
+        if (bool){
+            this.inverted = ['inverted']
         }
         else{
-            this.inverted = false;
-            this.classObject.splice(this.classObject.indexOf('inverted'),1);
-            this.segmentClassA.splice(this.segmentClassA.indexOf('inverted'),1);
+            this.inverted = [];
+        }
+    }
+    this.toggleInvert = function(){
+        if(!this.inverted){
+            this.invert(true);
+        }
+        else{
+            this.invert(false);
         }
     }
     this.partialTemplate = '';
@@ -333,6 +340,22 @@ var layoutgrid = new Vue({
             sizeguide: []
         }],
         editable: true,
+        basicColors:[
+            {name: "Default", value:""},
+            {name: "Red", value:"red"},
+            {name: "Orange", value:"orange"},
+            {name: "Yellow", value:"yellow"},
+            {name: "Olive", value:"olive"},
+            {name: "Green", value:"green"},
+            {name: "Teal", value:"teal"},
+            {name: "Blue", value:"blue"},
+            {name: "Violet", value:"violet"},
+            {name: "Purple", value:"purple"},
+            {name: "Pink", value:"pink"},
+            {name: "Brown", value:"brown"},
+            {name: "Grey", value:"grey"},
+            {name: "Black", value:"black"}
+        ],
         sizing: [
             "one wide column",
             "two wide column",
@@ -356,11 +379,16 @@ var layoutgrid = new Vue({
         var self = this;
         this.UUID = generateUUID();
         tinymce.EditorManager.init({});
+        $('.ui.basic.modal').modal({inverted: true});
         console.log('grid is ready');
+        console.log($.site.settings);
     },
     methods: {
         catalog: function () {
             $('.catalog').sidebar('toggle');
+        },
+        invoke: function(){
+            $('.ui.basic.modal').modal('show')
         },
         setup: function (content) {
             //accordion constructor
@@ -407,16 +435,49 @@ var layoutgrid = new Vue({
         }
     },
     components: {
+        'color-palette':{
+            props: ['palette', 'context'],
+            template: "#color-palette",
+            name: 'color-palette',
+            ready: function(){
+                console.log('palette ready!');
+            },
+            methods:{
+                updateColor:function(color, inverted){
+                    this.context.component.invert(inverted);
+                    this.context.component.colorClass = [color];
+                    $('.ui.basic.modal').modal('hide');
+                }
+            }
+        },
         'render-main-class':{
             props: ['data'],
             template: "#main-class",
             name: 'render-main-class',
             ready: function () {
-                console.log(this.data);
+                var self = this;
                 this.data.readyFunction();
                 $('.ui.dropdown').dropdown();
+                $('.ui.dropdown.colorpicker').dropdown({
+                    onChange: function(value, text, $selectedItem) {
+                        self.updateColor(value);
+                    }
+                });
                 $('.ui.checkbox').checkbox();
                 console.log('component is ready');
+            },
+            computed: {
+                calculatedClass: function () {//segment
+                    return this.data.segmentClassA.concat(this.data.segmentClassB,this.data.segmentClassC,this.data.segmentClassD,this.data.segmentClassE,this.data.colorClass,this.data.inverted);
+                },
+                calculatedClass2: function(){//accordion...
+                    return this.data.mainClass.concat(this.data.classObject,this.data.inverted);
+                }
+            },
+            methods:{
+                updateColor: function(value){
+                    this.data.colorClass = value;
+                },
             },
             partials: {
             }
