@@ -106,3 +106,13 @@ ul ul ul {
 .editable [contenteditable="true"]:hover, .component-context [contenteditable="true"]:hover{
     box-shadow: 0px 0px 10px 5px rgba(255,182,193,1);
 }
+
+
+
+.component{
+    min-height:50px;
+    background: #e5feff;
+    border-bottom:1px dotted rgb(212, 212, 213);
+    border-right:1px solid rgb(212, 212, 213);
+    border-left:1px solid rgb(212, 212, 213);
+}

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Amalia 0.2</title>
+    <!-- JQUERY -->
+    <script   src="/generic-visual-builder/js/jquery-1.12.4.min.js"></script>
+    <!-- JQUERY UI-->
+    <script   src="/generic-visual-builder/js/jquery-ui.min.js"></script>
+    <!-- SEMANTIC UI -->
+    <link rel="stylesheet" type="text/css" href="/generic-visual-builder/semantic/semantic.min.css">
+    <script src="/generic-visual-builder/semantic/semantic.min.js"></script>
+    <!-- APP CSS -->
+    <link rel="stylesheet" href="/generic-visual-builder/css/gvb2.css">
+    <!-- TINYMCE -->
+    <script src="/generic-visual-builder/js/tinymce/tinymce.min.js"></script>
+    <!-- WAVES -->
+    <script src="/generic-visual-builder/js/waves.min.js"></script>
+    <link rel="stylesheet" href="/generic-visual-builder/css/waves.min.css">
+</head>
+<body>
+<div class="ui left labeled icon sidebar inverted vertical menu context-basic">
+    <component-context :data="context"></component-context>
+    <template v-if="context.component">
+        <div class="eight wide column">
+            <h3>CLASS AND STYLE SETUP</h3>
+        </div>
+        <div class="eight wide column">
+            <h3>COMPONENT PREVIEW</h3>
+        </div>
+    </template>
+</div>
+<div class="ui left labeled icon sidebar inverted vertical menu component-catalog">
+    <component-catalog :data="context"></component-catalog>
+</div>
+
+<div class="ui basic modal colorpalette">
+    <template v-if="context.component">
+        <color-palette :context="context" :palette="basicColors"></color-palette>
+    </template>
+</div>
+<div class="ui grid top sidebar inverted labeled icon menu catalog">
+    <div class="row">
+        <div class="two wide column"><a class="item"><i class="camera retro icon"></i>{{context.UUID}}</a></div>
+        <div class="two wide column"><a class="item" v-on:click="setup('accordion')"><i class="copy icon"></i>Accordion</a></div>
+        <div class="two wide column"><a class="item" v-on:click="setup('text')"><i class="copy icon"></i>Text</a></div>
+    </div>
+</div>
+<div class="ui top labeled grid sidebar segment component-context">
+    <template v-if="context.component">
+        <div class="eight wide column">
+            <h3>CLASS AND STYLE SETUP</h3>
+            <div class="ui form">
+                <h5>SEGMENT SETUP</h5>
+                <div class="inline fields">
+                    <label>Segment Style:</label>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" value="" checked="" tabindex="0" class="hidden" v-model="context.component.segmentClassB">
+                            <label>Default</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" value="basic" tabindex="0" class="hidden" v-model="context.component.segmentClassB">
+                            <label>Basic</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" value="stacked" tabindex="0" class="hidden" v-model="context.component.segmentClassB">
+                            <label>Stacked</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" value="raised" tabindex="0" class="hidden" v-model="context.component.segmentClassB">
+                            <label>Raised</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" value="piled" tabindex="0" class="hidden" v-model="context.component.segmentClassB">
+                            <label>Piled</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <label>Segment Emphasis:</label>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" value="" checked="" tabindex="0" class="hidden" v-model="context.component.segmentClassD">
+                            <label>Default</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" value="secondary" tabindex="0" class="hidden" v-model="context.component.segmentClassD">
+                            <label>Secondary</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" value="tertiary" tabindex="0" class="hidden" v-model="context.component.segmentClassD">
+                            <label>Tertiary</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="inline fields">
+                    <label>Segment Color:</label>
+                    <div class="ui icon search dropdown button colorpicker">
+                        <i class="paint brush icon" :class="context.component.colorClass"></i>
+                        <span class="text">Default</span>
+                        <div class="menu">
+                            <div class="ui icon search input">
+                                <i class="search icon"></i>
+                                <input type="text" placeholder="Search color...">
+                            </div>
+                            <template v-for="color in coloring">
+                                <div class="ui center aligned segment" :class="color.value">
+                                    <div class="item" data-value="{{color.value}}">{{color.name}}</div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                <h5>COMPONENT SETUP</h5>
+
+                <button class="ui green button" v-on:click="context.component.addMagic(context.component.childPropObj)">Add Accordion Tab</button>
+                <button class="ui red button" v-on:click="invoke()">ColorPalette</button>
+                <select name="Element Classes" multiple="" class="ui fluid dropdown" v-model="context.component.classObject" multiple>
+                    <option value="">Classes</option>
+                    <option value="styled">Styled</option>
+                    <option value="fluid">Fluid</option>
+                </select>
+                <ol>
+                    <li v-for="child in context.component.children">
+                        <p>placeholder</p>
+                    </li>
+                </ol>
+            </div>
+        </div>
+        <div class="eight wide column">
+            <h3>COMPONENT PREVIEW</h3>
+            <render-main-class :data="context.component">
+                <render-sub-class-context v-for="child in context.component.children" :data="child" :index="$index"></render-sub-class-context>
+            </render-main-class>
+    </template>
+</div>
+<div class="ui left labeled icon sidebar inverted vertical menu row-context">
+    <div class="item"><i class="camera retro icon"></i>{{context.UUID}}</div>
+    <a class="item" v-on:click="context.addMagic()"><i class="columns icon"></i>Add Column</a>
+    <a class="item" v-on:click=""><i class="list layout icon"></i>Add Layout</a>
+    <a class="item" v-on:click=""><i class="copy icon"></i>Clone</a>
+    <a class="item" v-on:click="removeMagic(context)"><i class="red remove icon"></i>Delete Row</a>
+</div>
+<div class="ui left labeled icon sidebar inverted vertical menu col-context">
+    <div class="item"><i class="camera retro icon"></i>{{context.UUID}}</div>
+    <a class="item" v-on:click="catalog()"><i class="columns icon"></i>Add Component</a>
+    <div class="item">
+        <div class="mini ui buttons">
+            <button class="mini ui red button" v-on:click="context.minus()">
+                <i class="minus circle icon"></i>
+            </button>
+            <div class="or" data-text="{{context.colwidth +1}}"></div>
+            <button class="mini ui green button" v-on:click="context.plus()">
+                <i class='add circle icon'></i>
+            </button>
+        </div>
+        <p></p>
+        <p>Set Width</p>
+    </div>
+    <a class="item" v-on:click=""><i class="copy icon"></i>Clone</a>
+    <a class="item" v-on:click="removeMagic(context)"><i class="red remove icon"></i>Delete Row</a>
+</div>
+<div class="pusher" id="main-view">
+    <div class="ui horizontal section divider"><h3>NEW APP</h3></div>
+    <recursive-comp :data="test" :index="$index">
+    </recursive-comp>
+    <div class="ui horizontal section divider"><h3>OLD APP</h3></div>
+    <div class="ui grid container"   v-bind:class="{'editable': editable}">
+
+        <div class="ui horizontal section divider"><h3>Main Control Panel</h3></div>
+        <div id="main-control-panel">
+            <a class="ui button" v-on:click="addMagic()">add Row</a>
+            <div class="ui toggle checkbox">
+                <input type="checkbox" name="editable" v-model="editable">
+                <label>Edit</label>
+            </div>
+        </div>
+        <div class="ui horizontal section divider"><h3>Canvas</h3></div>
+        <!--Rows-->
+        <ul id ="grid-layout" v-sortable handle=".rowhandle" placeholder = "row-placeholder" connectwith="">
+            <template v-for="magicRowData in magicRows">
+                <li class="magicrow row" v-bind:class="{'context': magicRowData.iscontext}">
+                    <div class="row-panel ui inverted top attached menu">
+                        <a class="item rowhandle"><i class="move icon"></i>{{index}}</a>
+                        <a class="item" v-on:click="magicRowData.context()"><i class="wrench icon"></i></a>
+                        <a class="item" v-on:click="removebyindex($index)"><i class="red remove icon"></i></a>
+                    </div>
+                    <!--Columns-->
+                    <ul class="ui grid stackable container wpbcolumns" v-sortable handle=".columnhandle" placeholder = "column-placeholder" connectwith="ul.wpbcolumns">
+                        <template v-for="magicColumnData in magicRowData.magicColumns">
+                            <li class="magiccolumn" v-bind:class="[{'context': magicColumnData.iscontext}, magicColumnData.getwidth()]">
+                                <div class="ui inverted top attached segment col-panel">
+                                    <a class="item columnhandle"><i class="bordered white move icon"></i></a>
+                                    <a class="item" v-on:click="magicColumnData.context()"><i class="bordered white wrench icon"></i></a>
+                                    <a class="item" v-on:click="magicRowData.removebyindex($index)"><i class="bordered red remove icon"></i></a>
+                                </div>
+                                <!--Content Slots-->
+                                <ul class="wpbcomponents" v-sortable handle=".slothandle" placeholder = "slot-placeholder" connectwith="ul.wpbcomponents">
+                                    <template v-for="magicSlotData in magicColumnData.magicSlots">
+                                        <li class="magicslot" v-bind:class="{'context': magicSlotData.iscontext}">
+                                            <div class="slot-panel">
+                                                <a class="item slothandle"><i class="bordered inverted move icon"></i></a>
+                                                <a class="item" v-on:click="magicSlotData.context()"><i class="bordered inverted wrench icon"></i></a>
+                                                <a class="item" v-on:click="magicSlotData.component.toggleInvert()"><i class="bordered inverted adjust icon"></i></a>
+                                                <a class="item" v-on:click="magicColumnData.removebyindex($index)"><i class="bordered inverted red remove icon"></i></a>
+                                            </div>
+                                            <!--Renderred content goes here-->
+                                            <render-main-class :data="magicSlotData.component">
+                                                <render-sub-class v-for="child in magicSlotData.component.children" :data="child"></render-sub-class>
+                                            </render-main-class>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </li>
+                        </template>
+                    </ul>
+                </li>
+            </template>
+        </ul>
+        <div class="ui horizontal section divider"><h3>Data Model</h3></div>
+        <div class="row"><pre>{{$data | json}}</pre></div>
+    </div>
+</div>
+<!-- TEMPLATES -->
+
+<!-- Template for recursively rendering components -->
+<template id="main-class">
+    <div class="ui segment" v-bind:class="calculatedClass">
+        <div v-bind:class="calculatedClass2">
+            <slot></slot>
+        </div>
+    </div>
+</template>
+<template id="sub-class">
+    <template v-for="property in data.properties">
+        <partial v-bind:name="property.partial"></partial>
+    </template>
+</template>
+
+<template id="sub-class-context">
+    <a class="item" v-on:click="$parent.data.removebyindex(index)"><i class="bordered inverted red remove icon"></i></a>
+    <a class="item" v-on:click="$parent.data.setActive(index)"><i class="bordered inverted idea icon" v-bind:class="{'green' : data.activeOnStart}"></i>Active on pageload:{{data.activeOnStart}}</a>
+    <template v-for="property in data.properties">
+        <partial v-bind:name="property.partial"></partial>
+    </template>
+</template>
+
+<template id="accordion-title">
+    <div class="title">
+        <i class="dropdown icon"></i>
+        <div style="display:inline-block" v-tinymce="property.value"></div>
+    </div>
+</template>
+<template id="accordion-content">
+    <div class="content">
+        <div  v-tinymce="property.value"></div>
+    </div>
+</template>
+
+
+
+<template id="editable-content">
+    <div class="ui fitted slider checkbox">
+        <input type="checkbox" v-model="data.editable">
+        <label></label>
+    </div>
+    <template v-if="data.editable">
+        <div v-editor="data.html"></div>
+    </template>
+    <template v-else>
+        {{{data.html}}}
+    </template>
+
+</template>
+
+<template id="color-palette">
+    <h3>Basic Color Palette</h3>
+    <div class="ui equal width center aligned padded grid">
+        <template v-for="color in palette">
+            <div class="row">
+                <div class="column">
+                    <div class="ui fluid segment" :class="color.value" style="color:black" v-on:click="updateColor(color.value, false)">{{color.name}}</div>
+                </div>
+                <div class="column">
+                    <div class="ui fluid inverted segment" :class="color.value" v-on:click="updateColor(color.value, true)">Inverted {{color.name}}</div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>
+
+<template id="recursive-comp">
+    <template v-if="getPartialID()">
+        <partial v-bind:name="getPartialID()"></partial>
+    </template>
+    <template v-else>
+        <div class="component" v-bind:class="getProperty(data.id, 'mainClass')">
+            <partial name="action-menu"></partial>
+            <recursive-comp v-for="child in data.children" :data="child" :index="$index"></recursive-comp>
+        </div>
+    </template>
+</template>
+
+<template id="action-menu2">
+    <div class="action-menu fluid container">
+        <template v-if="$parent.data.id > 0">
+            <button class="ui mini black icon button"><i class="move icon"></i></button>
+        </template>
+        <button class="ui mini blue icon button" v-on:click="$parent.context()"><i class='settings icon'></i></button>
+        <template v-if="$parent.isNestable()">
+            <button class="ui mini green icon button" v-on:click="$parent.catalog()"><i class='add icon'></i></button>
+        </template>
+        <template v-if="$parent.data.id > 0">
+            <button class="ui mini red icon button" v-on:click="$parent.$parent.removeMagic($parent.index)"><i class='delete icon'></i></button>
+        </template>
+        <button class="ui mini black button"><strong>{{$parent.getProperty($parent.data.id, 'name') | uppercase}}</strong></button>
+    </div>
+</template>
+<template id="action-menu">
+    <div class="action-menu fluid container">
+        <template v-if="data.id > 0">
+            <button class="ui mini black icon button"><i class="move icon"></i></button>
+        </template>
+        <button class="ui mini blue icon button" v-on:click="context()"><i class='settings icon'></i></button>
+        <template v-if="isNestable()">
+            <button class="ui mini green icon button" v-on:click="catalog()"><i class='add icon'></i></button>
+        </template>
+        <template v-if="data.id > 0">
+            <button class="ui mini red icon button" v-on:click="$parent.removeMagic(index)"><i class='delete icon'></i></button>
+        </template>
+        <button class="ui mini black button"><strong>{{getProperty(data.id, 'name') | uppercase}}</strong></button>
+    </div>
+</template>
+<template id="drop-zone">
+    <div class="drop-zone"></div>
+</template>
+<template id="rich-text">
+    <div class="component rich-text">
+    <partial name="action-menu"></partial>
+        <div class="editor" v-tinymce="data.content">Sample Text</div>
+    </div>
+</template>
+<template id="component-catalog">
+    <template v-for="component in getCatalog()" v-if="component.id > 0">
+        <a class="item" v-on:click="addMagic(component.id)"><i class="{{component.icon}} icon"></i>{{component.name}}</a>
+    </template>
+</template>
+
+
+
+<!-- VUE JavaScript -->
+<script src="/generic-visual-builder/js/vue.min.js"></script>
+<!-- APP JavaScript -->
+<script src="/generic-visual-builder/js/gvb2.js"></script>
+</body>
+</html>

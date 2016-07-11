@@ -376,12 +376,10 @@ var layoutgrid = new Vue({
         ]
     },
     ready: function () {
-        var self = this;
         this.UUID = generateUUID();
         tinymce.EditorManager.init({});
         $('.ui.basic.modal').modal({inverted: true});
         console.log('grid is ready');
-        console.log($.site.settings);
     },
     methods: {
         catalog: function () {
