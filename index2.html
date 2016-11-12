@@ -5,10 +5,14 @@
     <title>Amalia 0.2</title>
     <!-- JQUERY -->
     <script   src="/generic-visual-builder/js/jquery-1.12.4.min.js"></script>
-    <!-- JQUERY UI-->
-    <script   src="/generic-visual-builder/js/jquery-ui.min.js"></script>
+    <!-- JQUERY UI
+    <script   src="/generic-visual-builder/js/jquery-ui.min.js"></script> -->
+    <!-- J SORTABLE
+    <script   src="/generic-visual-builder/js/jquery-sortable-min.js"></script>-->
     <!-- SEMANTIC UI -->
     <link rel="stylesheet" type="text/css" href="/generic-visual-builder/semantic/semantic.min.css">
+    <!-- FLEX LAYOUT -->
+    <link href="/generic-visual-builder/css/flex-layout-attribute.min.css" rel="stylesheet">
     <script src="/generic-visual-builder/semantic/semantic.min.js"></script>
     <!-- APP CSS -->
     <link rel="stylesheet" href="/generic-visual-builder/css/gvb2.css">
@@ -19,19 +23,11 @@
     <link rel="stylesheet" href="/generic-visual-builder/css/waves.min.css">
 </head>
 <body>
-<div class="ui left labeled icon sidebar inverted vertical menu context-basic">
-    <component-context :data="context"></component-context>
-    <template v-if="context.component">
-        <div class="eight wide column">
-            <h3>CLASS AND STYLE SETUP</h3>
-        </div>
-        <div class="eight wide column">
-            <h3>COMPONENT PREVIEW</h3>
-        </div>
-    </template>
+<div class="ui top grid sidebar blue segment component-context">
+    <component-context :context="context" :catalog="catalog"></component-context>
 </div>
 <div class="ui left labeled icon sidebar inverted vertical menu component-catalog">
-    <component-catalog :data="context"></component-catalog>
+    <component-catalog></component-catalog>
 </div>
 
 <div class="ui basic modal colorpalette">
@@ -46,7 +42,7 @@
         <div class="two wide column"><a class="item" v-on:click="setup('text')"><i class="copy icon"></i>Text</a></div>
     </div>
 </div>
-<div class="ui top labeled grid sidebar segment component-context">
+<div class="ui top labeled grid sidebar segment">
     <template v-if="context.component">
         <div class="eight wide column">
             <h3>CLASS AND STYLE SETUP</h3>
@@ -174,12 +170,71 @@
     <a class="item" v-on:click="removeMagic(context)"><i class="red remove icon"></i>Delete Row</a>
 </div>
 <div class="pusher" id="main-view">
-    <div class="ui horizontal section divider"><h3>NEW APP</h3></div>
-    <recursive-comp :data="test" :index="$index">
-    </recursive-comp>
-    <div class="ui horizontal section divider"><h3>OLD APP</h3></div>
-    <div class="ui grid container"   v-bind:class="{'editable': editable}">
+    <!--<button class="ui button" v-on:click="refreshSortable()">refresh nestable</button>-->
+    <!--<div class="ui horizontal section divider"><h3>PLAYGROUND</h3></div>-->
+    <!--<div class="playground-child" draggable="true" ondragstart="dragStart(event)"></div>-->
+    <!--<div class="playground-child" draggable="true" ondragstart="dragStart(event)"></div>-->
+    <!--<div class="playground-child" draggable="true" ondragstart="dragStart(event)"></div>-->
+    <!--<div class="playground-parent" ondragenter="dragEnter(event)" ondrop="drop(event)" ondragleave="dragLeave(event)" ondragover="dragOver(event)"></div>-->
 
+    <!--<div class="component nestable ui grid container relaxed" id="root">-->
+        <!--<div class="component nestable row" draggable="true" ondragstart="dragStart(event)">-->
+            <!--<div class="component nestable four wide column" draggable="true" ondragstart="dragStart(event)">-->
+            <!--</div>-->
+            <!--<div class="component nestable four wide column" draggable="true" ondragstart="dragStart(event)">-->
+             <!--</div>-->
+            <!--<div class="component nestable four wide column" draggable="true" ondragstart="dragStart(event)">-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="component nestable row" draggable="true" ondragstart="dragStart(event)">-->
+         <!--</div>-->
+        <!--<div class="component nestable row" draggable="true" ondragstart="dragStart(event)">-->
+            <!--<div class="component nestable four wide column" draggable="true" ondragstart="dragStart(event)">-->
+            <!--</div>-->
+            <!--<div class="component nestable four wide column" draggable="true" ondragstart="dragStart(event)">-->
+            <!--</div>-->
+            <!--<div class="component nestable four wide column" draggable="true" ondragstart="dragStart(event)">-->
+            <!--</div>-->
+            <!--<div class="component nestable four wide column" draggable="true" ondragstart="dragStart(event)">-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="component nestable row" draggable="true" ondragstart="dragStart(event)">-->
+            <!--<div class="component nestable four wide column" draggable="true" ondragstart="dragStart(event)">-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="component nestable row" draggable="true" ondragstart="dragStart(event)">-->
+            <!--<div class="component nestable four wide column" draggable="true" ondragstart="dragStart(event)">-->
+                <!--<div class="component nestable ui segment" draggable="true" ondragstart="dragStart(event)">-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="component nestable row" draggable="true" ondragstart="dragStart(event)">-->
+        <!--</div>-->
+        <!--<div class="component nestable row" draggable="true" ondragstart="dragStart(event)">-->
+        <!--</div>-->
+        <!--<div class="component nestable row" draggable="true" ondragstart="dragStart(event)">-->
+        <!--</div>-->
+        <!--<div class="component nestable row" draggable="true" ondragstart="dragStart(event)">-->
+        <!--</div>-->
+        <!--<div class="component nestable row" draggable="true" ondragstart="dragStart(event)">-->
+            <!--<div class="component nestable eight wide column" draggable="true" ondragstart="dragStart(event)">-->
+                <!--<div class="component nestable ui segment" draggable="true" ondragstart="dragStart(event)">-->
+                <!--</div>-->
+                <!--<div class="component nestable ui segment" draggable="true" ondragstart="dragStart(event)">-->
+                <!--</div>-->
+                <!--<div class="component nestable ui segment" draggable="true" ondragstart="dragStart(event)">-->
+                <!--</div>-->
+                <!--<div class="component nestable ui segment" draggable="true" ondragstart="dragStart(event)">-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+    <div class="ui horizontal section divider"><h3>NEW APP</h3></div>
+    <div id="root" v-bind:class="appstatus">
+    <recursive-comp :data="test" :index="$index
+    </recursive-comp></div>
+    <div class="ui horizontal section divider"><h3>OLD APP</h3></div>
+    <div class="ui grid container" v-bind:class="{'editable': editable}">
         <div class="ui horizontal section divider"><h3>Main Control Panel</h3></div>
         <div id="main-control-panel">
             <a class="ui button" v-on:click="addMagic()">add Row</a>
@@ -303,38 +358,39 @@
 </template>
 
 <template id="recursive-comp">
+    <template v-if="index===0"><partial name="drop-zone"></partial></template>
     <template v-if="getPartialID()">
         <partial v-bind:name="getPartialID()"></partial>
     </template>
     <template v-else>
-        <div class="component" v-bind:class="getProperty(data.id, 'mainClass')">
-            <partial name="action-menu"></partial>
-            <recursive-comp v-for="child in data.children" :data="child" :index="$index"></recursive-comp>
-        </div>
+        <template v-if="isNestable">
+            <div class="component nestable" v-bind:class="data.classObject.calculatedClass" @dragenter="startDragEvent" draggable="true" @dragend="endDragEvent">
+                <partial name="action-menu"></partial>
+                <template v-if="data.children.length===0">
+                    <partial name="drop-zone-nested"></partial>
+                </template>
+                <template v-else>
+                    <recursive-comp v-for="child in data.children" :data="child" :index="$index"></recursive-comp>
+                </template>
+            </div>
+        </template>
+        <template v-else>
+            <div class="component" v-bind:class="data.classObject.calculatedClass">
+                <partial name="action-menu"></partial>
+            </div>
+        </template>
     </template>
+    <partial name="drop-zone"></partial>
 </template>
 
-<template id="action-menu2">
-    <div class="action-menu fluid container">
-        <template v-if="$parent.data.id > 0">
-            <button class="ui mini black icon button"><i class="move icon"></i></button>
-        </template>
-        <button class="ui mini blue icon button" v-on:click="$parent.context()"><i class='settings icon'></i></button>
-        <template v-if="$parent.isNestable()">
-            <button class="ui mini green icon button" v-on:click="$parent.catalog()"><i class='add icon'></i></button>
-        </template>
-        <template v-if="$parent.data.id > 0">
-            <button class="ui mini red icon button" v-on:click="$parent.$parent.removeMagic($parent.index)"><i class='delete icon'></i></button>
-        </template>
-        <button class="ui mini black button"><strong>{{$parent.getProperty($parent.data.id, 'name') | uppercase}}</strong></button>
-    </div>
-</template>
 <template id="action-menu">
     <div class="action-menu fluid container">
         <template v-if="data.id > 0">
-            <button class="ui mini black icon button"><i class="move icon"></i></button>
+            <div class="ui mini black icon button drag-handle"><i class="move icon"></i></div>
         </template>
-        <button class="ui mini blue icon button" v-on:click="context()"><i class='settings icon'></i></button>
+        <template v-if="isSelectable()">
+            <button class="ui mini blue icon button" v-on:click="context()"><i class='settings icon'></i></button>
+        </template>
         <template v-if="isNestable()">
             <button class="ui mini green icon button" v-on:click="catalog()"><i class='add icon'></i></button>
         </template>
@@ -345,7 +401,14 @@
     </div>
 </template>
 <template id="drop-zone">
-    <div class="drop-zone"></div>
+    <template v-if="isDragEvent()">
+        <div class="drop-zone" v-bind:class="getProperty(data.id,'placeHolder')" @dragenter="dropzoneover" @dragleave="dropzoneout"></div>
+    </template>
+</template>
+<template id="drop-zone-nested">
+    <template v-if="isDragEvent()">
+        <div class="drop-zone-nested" @dragenter="dropzoneover" @dragleave="dropzoneout"></div>
+    </template>
 </template>
 <template id="rich-text">
     <div class="component rich-text">
@@ -358,9 +421,71 @@
         <a class="item" v-on:click="addMagic(component.id)"><i class="{{component.icon}} icon"></i>{{component.name}}</a>
     </template>
 </template>
-
-
-
+<template id="component-context">
+    <div class="eight wide column">
+        <h3 class="ui horizontal divider header">
+            <i class="settings icon"></i>
+            Setup - {{catalog.name}}
+        </h3>
+        <div class="ui form">
+            <template v-for="option in catalog.classOptions">
+                <div class="ui piled segments">
+                    <partial name="user-help"></partial>
+                    <div class="ui segment"><partial v-bind:name="option.optionType"></partial></div>
+                </div>
+            </template>
+        </div>
+    </div>
+    <h5 class="ui vertical divider header">
+        :::
+    </h5>
+    <div class="eight wide column">
+        <h3 class="ui horizontal divider header">
+            <i class="pointing down icon"></i>
+            Preview
+        </h3>
+    </div>
+</template>
+<template id="select-multiple">
+    <div class="inline fields">
+        <select name="Element Classes" multiple="" class="ui fluid dropdown" v-model="context.classObject.collector[$index]" multiple>
+            <option value="">Options</option>
+            <template v-for="selection in option.options">
+                <option value="{{selection.value}}" data-content="{{selection.info}}">{{selection.name}}</option>
+            </template>
+        </select>
+    </div>
+</template>
+<template id="select-radio">
+    <div class="inline fields">
+        <div class="field">
+            <div class="ui radio checkbox">
+                <input type="radio" value="" checked="" tabindex="0" class="hidden" v-model="context.classObject.collector[$index]">
+                <label>Default</label>
+            </div>
+        </div>
+        <template v-for="selection in option.options">
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input type="radio" value="{{selection.value}}" tabindex="0" class="hidden" v-model="context.classObject.collector[$parent.$index]">
+                    <label>{{selection.name}}</label>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>
+<template id="user-help">
+    <div class="ui segment user-help">
+        <div class="ui top attached black inverted label">{{option.optionName}}
+                <i class="help circle icon"></i>
+        </div>
+    </div>
+    <div class="ui wide popup">
+        <template v-for="selection in option.options">
+            <p><strong>{{selection.name}}</strong>: {{selection.info}}</p>
+        </template>
+    </div>
+</template>
 <!-- VUE JavaScript -->
 <script src="/generic-visual-builder/js/vue.min.js"></script>
 <!-- APP JavaScript -->

@@ -1,0 +1,240 @@
+.animated {
+    /*animation-fill-mode: both;*/
+}
+.animateIn {
+    animation-name: animateIn;
+    animation-duration: 1s;
+}
+.animateOut {
+    animation-name: animateOut;
+    animation-duration: 0.5s;
+}
+.animateIn *{
+    animation-name: animateIn;
+    animation-duration: 2s;
+}
+.animateOut *{
+    animation-name: animateOut;
+    animation-duration: 1s;
+}
+@keyframes animateIn {
+    from{
+        flex-basis:0;
+        flex-shrink:0;
+        flex-grow:0;
+        min-height:0
+    }
+}
+@keyframes animateOut {
+    to{
+        flex-basis:0;
+        flex-shrink:0;
+        flex-grow:0;
+        min-height:0;
+    }
+}
+
+.ghost{
+    background-color:white !important;
+    border:1px dotted black;
+    opacity:0.7;
+    pointer-events: none !important;
+    /*transition:all 0.2s;*/
+}
+.ghost *{
+    pointer-events: none !important;
+}
+.ghost .component{
+    border:1px dotted black;
+    /*transition:all 0.2s ease-in-out !important;*/
+}
+/*.ghost.fadeout {*/
+    /*transition:all 0.5s ease-in-out !important;*/
+/*}*/
+
+.rectangle{
+    position:fixed;
+    border:3px double blue;
+    z-index:99;
+}
+.dragevent .rectangle{
+    z-index:-1;
+}
+.hidden{
+    /*display:none !important;*/
+    position: absolute !important;
+    visibility: hidden !important;
+    /*transition:0.1s;*/
+}
+/* always present */
+.expand-transition {
+    transition: all 0.1s ease;
+}
+
+/* .expand-enter defines the starting state for entering */
+/* .expand-leave defines the ending state for leaving */
+.expand-enter{
+    background-color:red;
+}
+.expand-leave{
+    background-color:red;
+}
+
+.dragevent .dropzone{
+    border:1px dotted red;
+}
+.dragenter{
+    background-color:red !important;
+}
+/*.dragged *{*/
+    /*border:1px solid red;*/
+    /*pointer-events: none;*/
+/*}*/
+
+.me{
+    background-color:lightpink;
+}
+/*wrapper for layout component*/
+.flex-layout{/*define flex flow + self width*/
+    display:flex;
+}
+.flex-layout.flex-row{
+    flex-flow: row wrap;
+}
+.flex-layout.flex-column{
+    flex-flow: column nowrap;
+}
+/*wrapper for all components*/
+.flex-cell{
+    flex:0 1 100%; /*define self width*/
+    display:flex;
+    flex-flow:column;
+}
+.flex-holder{
+    /*flex:0 1 auto;*/
+    min-width:50px;
+    min-height:50px;
+    border:1px dotted red;
+    background-color:lightpink;
+}
+.ui-sortable-placeholder{
+    position:relative !important;
+    flex: 0 1 100%;
+    visibility:visible !important;
+    border:1px dotted red;
+    background-color:lightpink;
+}
+.nestable{
+    flex:auto;
+}
+/*width-classes - preview*/
+.edit .size-12 {
+    flex-basis: calc(100% - 20px);
+}
+.edit .size-11 {
+    flex-basis: calc(91.66666667% - 20px);
+}
+.edit .size-10 {
+    flex-basis: calc(83.33333333% - 20px);
+}
+.edit .size-9 {
+    flex-basis: calc(75% - 20px);
+}
+.edit .size-8 {
+    flex-basis: calc(66.66666667% - 20px);
+}
+.edit .size-7 {
+    flex-basis: calc(58.33333333% - 20px);
+}
+.edit .size-6 {
+    flex-basis: calc(50% - 20px);
+}
+.edit .size-5 {
+    flex-basis: calc(41.66666667% - 20px);
+}
+.edit .size-4 {
+    flex-basis: calc(33.33333333% - 20px);
+}
+.edit .size-3 {
+    flex-basis: calc(25% - 20px);
+}
+.edit .size-2 {
+    flex-basis: calc(16.66666667% - 20px);
+}
+.edit .size-1 {
+    flex-basis: calc(8.33333333% - 20px);
+}
+
+
+/*width-classes - real*/
+.size-12 {
+    flex-basis: 100%;
+}
+.size-11 {
+    flex-basis: 91.66666667%;
+}
+.size-10 {
+    flex-basis: 83.33333333%;
+}
+.size-9 {
+    flex-basis: 75%;
+}
+.size-8 {
+    flex-basis: 66.66666667%;
+}
+.size-7 {
+    flex-basis: 58.33333333%;
+}
+.size-6 {
+    flex-basis: 50%;
+}
+.size-5 {
+    flex-basis: 41.66666667%;
+}
+.size-4 {
+    /*flex-basis: 33.33333333%;*/
+    flex: 1 1 33.33333333%;
+}
+.size-3 {
+    flex-basis: 25%;
+}
+.size-2 {
+    flex-basis: 16.66666667%;
+}
+.size-1 {
+    flex-basis: 8.33333333%;
+}
+
+.component{
+    min-height: 50px;
+    box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.2);
+    box-sizing: border-box;
+    margin:10px;
+}
+.component:hover{
+    background-color: rgba(0,0,0,0.2);
+    /*min-height: 100px;*/
+    /*transition:0.2s;*/
+}
+.action-menu{
+    display:none;
+}
+.component:hover>.action-menu{
+    display:block;
+}
+
+.dragevent .action-menu{
+    display:none !important;
+}
+.editor{
+    min-height:1.5rem;
+}
+.editor:hover{
+    background-color:#ffe5e5;
+}
+.action-menu .ui.ribbon.label {
+    left: -1rem;
+    width:0;
+    padding-left: 1rem;
+    padding-right: 0;
+}

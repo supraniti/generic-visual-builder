@@ -1,24 +1,217 @@
 .component{
-    min-height: 75px;
-    box-shadow: 0px 0px 2px 1px rgba(0,0,0,0.25);
-    padding:15px !important;
-    margin:5px 0 !important;
+    min-height: 50px;
+    border: 1px dotted rgba(0,0,0,0.1);
+    transition:0.5s;
 }
 .component:hover{
-    box-shadow: 0px 0px 5px 3px rgba(0,0,0,0.25);
+    background-color: rgba(0,0,100,0.1);
+    min-height: 100px;
+    transition:0.5s;
 }
-.action-menu{
-    visibility:hidden;
+
+.component.nestable.ui.grid.container {
+    /*display: block;*/
+    /*z-index: 10;*/
+}
+.drop-zone.row{
+    height:15px !important;
+    padding:0 !important;
+    margin:0 !important;
+}
+.drop-zone.row.over{
+    height:45px !important;
+}
+.drop-zone.column{
+    width:15% !important;
+    padding:0 !important;
+    margin:0 !important;
+}
+.drop-zone.column.over{
+    width:25% !important;
+}
+.drop-zone{
+    background-color:red;
+    opacity:0.1;
+    /*padding:15px;*/
+    /*margin:-15px;*/
+    transition: ease-in 0.5s;
+    z-index:99;
+}
+.drop-zone.over{
+    opacity:0.2;
+    padding:45px;
+    transition: ease-out 0.5s;
+}
+/*.drop-zone:last-child{*/
+    /*background-color:green;*/
+    /*padding:15px 0;*/
+    /*margin:15px 0;*/
+    /*width:100%;*/
+/*}*/
+/*.drop-zone.over:last-child{*/
+    /*padding:45px 0;*/
+    /*margin:15px 0;*/
+/*}*/
+.drop-zone-nested{
+    background-color:blue;
+    opacity:0.1;
+    position:absolute;
+    top:25%;
+    right:25%;
+    width:50%;
+    height:50%;
+    transition: ease-in 0.5s;
+    z-index:99;
+}
+.drop-zone-nested.over{
+    opacity:0.1;
+    top:10%;
+    right:5%;
+    width:90%;
+    height:80%;
+    transition: ease-in 0.5s;
+}
+.dragevent .action-menu{
+    display:none;
+}
+.dragevent .component{
+    /*margin:-15px;*/
+    transition: 0.2s;
+}
+.dragevent .component:hover{
+    min-height:50px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.drop-zone-generic{
+    background-color:red;
     opacity:0;
-    height:0;
+    padding:15px;
+    margin:-15px;
+    transition: ease-in 0.5s;
+    z-index:99;
+}
+.drop-zone-generic.drop-zone-over{
+    opacity:0.1;
+    /*+30px*/
+    padding:45px;
+    transition: ease-out 0.5s;
+
+}
+.drop-zone-generic.last{
+    padding-right:0px;
+    padding-lefft:0px;
+    margin-right:0px;
+    margin-left:0px;
+    margin-top:-15px;
+    margin-bottom:-15px;
+    padding-top:15px;
+    padding-bottom:15px;
+    /*height:20px;*/
     width:100%;
-    transition:0.2s;
+    transition: ease-in 1s;
+}
+.drop-zone-generic.last.drop-zone-over {
+    padding:0px;
+    margin:0px;
+    transition: ease-out 1s;
+    padding-top:45px;
+    padding-bottom:45px;
+}
+.drop-zone-generic.nested{
+    background-color:red;
+    opacity:0;
+    position:absolute;
+    top:20%;
+    height:60%;
+    left:10%;
+    width:80%;
+    padding:0;
+    margin:0;
+}
+.drop-zone-generic.nested.drop-zone-over{
+    opacity:0.1;
+    top:10%;
+    left:5%;
+    width:90%;
+    height:80%;
+    padding:0;
+    margin:0;
+}
+
+
+
+.drop-zone-vertical{
+    background-color:red;
+    opacity:0.1;
+    padding-right:25px;
+    padding-left:25px;
+    height:100%;
+    margin-right:-25px;
+    margin-left:-25px;
+    transition: ease-in 0.5s;
+    z-index:99;
+}
+.drop-zone-vertical.drop-zone-over{
+    opacity:0.5;
+    margin:0;
+    width:50px;
+    transition: ease-out 0.5s;
+}
+.drop-zone-vertical.last.drop-zone-over{
+    width:0px;
+    margin-right:-25px;
+    margin-left:-25px;
+}
+.drop-zone-horizontal{
+    background-color:blue;
+    opacity:0.1;
+    padding-top:10px;
+    padding-bottom:10px;
+    width:100%;
+    margin-top:-10px;
+    margin-bottom:-10px;
+    transition: ease-in 0.5s;
+    z-index:99;
+}
+.drop-zone-horizontal.drop-zone-over{
+    opacity:0.5;
+    margin:0;
+    height:20px;
+    transition: ease-out 0.5s;
+}
+
+
+
+.drop-zone-nested.drop-zone-over{
+    opacity:0.5;
+    top:0;
+    right:0;
+    width:100%;
+    height:100%;
+    transition: ease-out 0.5s;
+}
+
+.action-menu{
+    height:0;
+    visibility:hidden;
+    width:100%;
 }
 .component:hover>.action-menu{
     height:30px;
     visibility:visible;
-    opacity:1;
-    transition:0.2s;
     margin-bottom:5px;
 }
 .component:hover .action-menu{

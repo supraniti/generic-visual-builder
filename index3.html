@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Amalia 0.2</title>
+    <!-- JQUERY -->
+    <script   src="/generic-visual-builder/js/jquery-1.12.4.min.js"></script>
+    <!--JQUERY UI-->
+    <script   src="/generic-visual-builder/js/jquery-ui.min.js"></script>
+    <!--DRAGULA-->
+    <script   src="/generic-visual-builder/js/dragula.min.js"></script>
+    <link href="/generic-visual-builder/css/dragula.min.css" rel="stylesheet">
+    <!-- SEMANTIC UI -->
+    <link rel="stylesheet" type="text/css" href="/generic-visual-builder/semantic/semantic.min.css">
+    <script src="/generic-visual-builder/semantic/semantic.min.js"></script>
+    <!-- ANIMATECSS -->
+    <link href="/generic-visual-builder/css/animate.css" rel="stylesheet">
+    <!-- APP CSS -->
+    <link rel="stylesheet" href="/generic-visual-builder/css/gvb3.css">
+    <!-- TINYMCE -->
+    <script src="/generic-visual-builder/js/tinymce/tinymce.min.js"></script>
+    <!-- WAVES -->
+    <script src="/generic-visual-builder/js/waves.min.js"></script>
+    <link rel="stylesheet" href="/generic-visual-builder/css/waves.min.css">
+</head>
+<body>
+<div class="ui top grid sidebar blue segment component-context">
+    <component-context :context="context" :catalog="catalog"></component-context>
+</div>
+<div class="ui left labeled icon sidebar inverted vertical menu component-catalog">
+    <component-catalog></component-catalog>
+</div>
+<div class="ui basic modal colorpalette">
+    <template v-if="context.component">
+        <color-palette :context="context" :palette="basicColors"></color-palette>
+    </template>
+</div>
+<div class="pusher" id="main-view">
+    <div class="ui horizontal section divider"><h3>PLAYGROUND</h3></div>
+    <div class="ui horizontal section divider"><h3>CANVAS</h3></div>
+    <div id="root" class="ui container edit" v-bind:class="{'dragevent': dragEvent}">
+        <div class="ui fluid blue segment">{{dropIndex}}</div>
+        <recursive-comp :data="test" :index="$index"></recursive-comp>
+    </div>
+    <div class="ui horizontal section divider"><h3>DATA MODEL</h3></div>
+    <div class="row"><pre>{{$data | json}}</pre></div>
+</div>
+<!--<template v-for="rect in rectangles">-->
+    <!--<div class="rectangle" v-bind:style="rect.styleObject"></div>-->
+<!--</template>-->
+
+<!-- TEMPLATES -->
+<!-- Template for recursively rendering components -->
+<!--<template id="drop-zone">-->
+    <!--<div id="drop-zone-inside" v-bind:style="rect[0]"></div>-->
+    <!--<div id="drop-zone-before" v-bind:style="rect[1]"></div>-->
+    <!--<div id="drop-zone-after" v-bind:style="rect[2]"></div>-->
+<!--</template>-->
+<template id="abstract-component">
+
+</template>
+<template id="recursive-comp">
+    <div class="flex-cell component" draggable="true" @dragstart.self="startDragEvent" @dragend="endDragEvent" v-bind:class="[{'dragged': data.dragged}, data.size, {'dropzone': data.dropzone}]">
+        <template v-if="getPartialID()">
+            <partial v-bind:name="getPartialID()"></partial>
+        </template>
+        <template v-else>
+            <partial name="action-menu"></partial>
+            <template v-if="isNestable">
+                <div class="nestable" v-bind:class="data.classObject.calculatedClass" @dragenter.prevent.stop.self="dragEnterEvent" @dragleave.prevent.stop.self="dragLeaveEvent" @dragover.prevent.stop.self="dragOverEvent" @drop.stop="dropEvent">
+                    <recursive-comp v-for="child in data.children" :data="child" :index="$index"></recursive-comp>
+                </div>
+                <!--<template v-if="data.dragged">-->
+                    <!--<div class="nestable dragged" v-bind:class="data.classObject.calculatedClass">-->
+                        <!--<recursive-comp v-for="child in data.children" :data="child" :index="$index"></recursive-comp>-->
+                    <!--</div>-->
+                <!--</template>-->
+                <!--<template v-else>-->
+                    <!--<div class="nestable" v-bind:class="data.classObject.calculatedClass" @dragenter.prevent.stop.self="dragEnterEvent" @dragleave.prevent.stop.self="dragLeaveEvent" @dragover.prevent.stop.self="dragOverEvent" @drop.stop="dropEvent">-->
+                        <!--<recursive-comp v-for="child in data.children" :data="child" :index="$index"></recursive-comp>-->
+                    <!--</div>-->
+                <!--</template>-->
+            </template>
+        </template>
+    </div>
+</template>
+<template id="color-palette">
+    <h3>Basic Color Palette</h3>
+    <div class="ui equal width center aligned padded grid">
+        <template v-for="color in palette">
+            <div class="row">
+                <div class="column">
+                    <div class="ui fluid segment" :class="color.value" style="color:black" v-on:click="updateColor(color.value, false)">{{color.name}}</div>
+                </div>
+                <div class="column">
+                    <div class="ui fluid inverted segment" :class="color.value" v-on:click="updateColor(color.value, true)">Inverted {{color.name}}</div>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>
+<template id="action-menu">
+    <div class="action-menu">
+        <div class="ui black ribbon label">
+            <template v-if="data.id > 0">
+                <div class="ui mini black icon button drag-handle" @mousedown="dragged"><i class="move icon"></i></div>
+            </template>
+            <template v-if="isSelectable()">
+                <div class="ui mini blue icon button" v-on:click="context()"><i class='settings icon'></i></div>
+            </template>
+            <template v-if="isNestable()">
+                <div class="ui mini green icon button" v-on:click="catalog()"><i class='add icon'></i></div>
+            </template>
+            <template v-if="data.id > 0">
+                <div class="remove ui mini red icon button" v-on:click="$parent.removeMagic(index)"><i class='delete icon'></i></div>
+            </template>
+            <div class="name ui mini black button">{{getProperty(data.id, 'name') | uppercase}}</div>
+        </div>
+    </div>
+</template>
+<template id="rich-text">
+    <div class="component rich-text">
+        <partial name="action-menu"></partial>
+        <div class="editor" v-tinymce="data.content">Sample Text</div>
+    </div>
+</template>
+<template id="component-catalog">
+    <template v-for="component in getCatalog()" v-if="component.id > 0">
+        <a class="item" v-on:click="addMagic(component.id)"><i class="{{component.icon}} icon"></i>{{component.name}}</a>
+    </template>
+</template>
+<template id="component-context">
+    <div class="eight wide column">
+        <h3 class="ui horizontal divider header">
+            <i class="settings icon"></i>
+            Setup - {{catalog.name}}
+        </h3>
+        <div class="ui form">
+            <template v-for="option in catalog.classOptions">
+                <div class="ui piled segments">
+                    <partial name="user-help"></partial>
+                    <div class="ui segment"><partial v-bind:name="option.optionType"></partial></div>
+                </div>
+            </template>
+        </div>
+    </div>
+    <h5 class="ui vertical divider header">
+        :::
+    </h5>
+    <div class="eight wide column">
+        <h3 class="ui horizontal divider header">
+            <i class="pointing down icon"></i>
+            Preview
+        </h3>
+    </div>
+</template>
+<template id="select-multiple">
+    <div class="inline fields">
+        <select name="Element Classes" multiple="" class="ui fluid dropdown" v-model="context.classObject.collector[$index]" multiple>
+            <option value="">Options</option>
+            <template v-for="selection in option.options">
+                <option value="{{selection.value}}" data-content="{{selection.info}}">{{selection.name}}</option>
+            </template>
+        </select>
+    </div>
+</template>
+<template id="select-radio">
+    <div class="inline fields">
+        <div class="field">
+            <div class="ui radio checkbox">
+                <input type="radio" value="" checked="" tabindex="0" class="hidden" v-model="context.classObject.collector[$index]">
+                <label>Default</label>
+            </div>
+        </div>
+        <template v-for="selection in option.options">
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input type="radio" value="{{selection.value}}" tabindex="0" class="hidden" v-model="context.classObject.collector[$parent.$index]">
+                    <label>{{selection.name}}</label>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>
+<template id="user-help">
+    <div class="ui segment user-help">
+        <div class="ui top attached black inverted label">{{option.optionName}}
+            <i class="help circle icon"></i>
+        </div>
+    </div>
+    <div class="ui wide popup">
+        <template v-for="selection in option.options">
+            <p><strong>{{selection.name}}</strong>: {{selection.info}}</p>
+        </template>
+    </div>
+</template>
+<template id="rectspace">
+
+</template>
+<!-- VUE JavaScript -->
+<script src="/generic-visual-builder/js/vue.min.js"></script>
+<!-- APP JavaScript -->
+<script src="/generic-visual-builder/js/gvb3.js"></script>
+</body>
+</html>
